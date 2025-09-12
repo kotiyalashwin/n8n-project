@@ -7,49 +7,32 @@ import {
 } from "../ui/dialog";
 import { Handle, NodeToolbar, Position } from "@xyflow/react";
 import NodeForm from "../NodeForm";
-import { Button } from "../ui/button";
 import { TaskNodeData } from "@/lib/types";
-import { useSheetStore } from "@/store/sheetStore";
 import { CircleX } from "lucide-react";
 
-export const TaskNode = ({ data }: { data: TaskNodeData }) => {
-  const { openSheet } = useSheetStore();
+export const AiNode = ({ data }: { data: TaskNodeData }) => {
   return (
     <Dialog>
-      <div className="relative bg-[#1B1720] text-white p-8 rounded-2xl flex items-center">
+      <div className="relative bg-transparent border border-dashed px-4 py-2 text-white p-8  flex items-center">
         <NodeToolbar isVisible={true} position={Position.Top}>
           <CircleX
             className="text-white"
             onClick={() => data.deleteNode(data.id)}
           />
         </NodeToolbar>
-        <NodeToolbar isVisible={true} position={Position.Right}>
-          <Button
-            className="bg-white p-4 h-10 w-10"
-            variant={"outline"}
-            onClick={() => {
-              console.log("clicked");
-              openSheet();
-            }}
-          >
-            +
-          </Button>
-        </NodeToolbar>
 
         <DialogTrigger asChild>
-          <div className="flex items-center space-x-2">
+          <div className="flex w-full items-center justify-evenly">
             <Handle type="source" position={Position.Right} />
             <img
               src={`/icons/${data.type}.svg`}
               alt={data.type}
-              className="w-16 h-16"
+              className="w-16 h-16 justify-center-safe"
             />
+            <span className="text-xl"> AI Agent</span>
+
             {data.count !== 1 && (
-              <Handle
-                type="target"
-                isConnectableStart={false}
-                position={Position.Left}
-              />
+              <Handle type="target" position={Position.Left} />
             )}
           </div>
         </DialogTrigger>

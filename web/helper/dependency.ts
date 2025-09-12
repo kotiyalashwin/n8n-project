@@ -18,7 +18,7 @@ export const getDependencyData = (nodes: Node[], edges: Edge[]) => {
   //not a copy but reference of TREE
   const nodeMap = Object.fromEntries(nodesTree.map((n) => [n.id, n]));
 
-  //search for the nodeIds in edges (source and target)
+  //search for the no deIds in edges (source and target)
   edges.forEach((edge) => {
     const parent = nodeMap[edge.source];
     if (parent) {
