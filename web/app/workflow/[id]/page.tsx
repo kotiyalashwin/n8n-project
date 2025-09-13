@@ -19,16 +19,21 @@ import {
   Connection,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { NodeSheet } from "@/components/SheetComponent";
+import { Button } from "@/components/ui/button";
+import { ManualNode } from "@/components/nodes/ManualNode";
+import { CredentialModal } from "@/components/CredentialModal";
 
 export default function Page(params: Promise<{ id: string }>) {
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const { isOpen, openSheet, closeSheet } = useSheetStore();
+
   const nodeTypes: NodeTypes = {
     taskNode: TaskNode,
     aiNode: AiNode,
+    manualNode: ManualNode,
   };
   const handleAddNode = ({ name, type, variant }: newNodeParams) => {
     const newNodeId = crypto.randomUUID();
@@ -78,6 +83,10 @@ export default function Page(params: Promise<{ id: string }>) {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 cursor-pointer">
             {nodes.length === 0 && <PlaceholderNode />}
           </div>
+
+          <Button className="z-10 absolute" onClick={() => console.log(nodes)}>
+            All Nodes
+          </Button>
 
           <NodeSheet
             closeSheet={closeSheet}
