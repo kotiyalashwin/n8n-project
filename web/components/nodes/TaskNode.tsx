@@ -60,7 +60,7 @@ export const TaskNode = ({ data }: { data: TaskNodeData }) => {
         <VisuallyHidden>
           <DialogTitle></DialogTitle>
         </VisuallyHidden>
-        <NodeForm type={data.type} />
+        <NodeForm type={data.type} nodeId={data.id} />
       </DialogContent>
     </Dialog>
   );
