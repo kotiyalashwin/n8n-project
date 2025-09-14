@@ -32,7 +32,7 @@ export const ManualNode = ({ data }: { data: ManualNodeData }) => {
       </NodeToolbar>
       <NodeToolbar isVisible={true} position={Position.Left}>
         <Button
-          className="bg-orange-600/50
+          className="bg-red-600/50
           hover:text-white
           hover:border-2 hover:border-red-600 hover:bg-transparent border-0 text-white p-4 text-lg"
           variant={"outline"}

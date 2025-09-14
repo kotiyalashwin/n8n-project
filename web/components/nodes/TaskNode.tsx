@@ -11,6 +11,7 @@ import { Button } from "../ui/button";
 import { TaskNodeData } from "@/lib/types";
 import { useSheetStore } from "@/store/sheetStore";
 import { CircleX } from "lucide-react";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 export const TaskNode = ({ data }: { data: TaskNodeData }) => {
   const { openSheet } = useSheetStore();
@@ -55,13 +56,11 @@ export const TaskNode = ({ data }: { data: TaskNodeData }) => {
         </DialogTrigger>
       </div>
 
-      <DialogContent className="bg-white ">
-        <DialogHeader>
-          <DialogTitle>Fill this form</DialogTitle>
-        </DialogHeader>
-        <div>
-          <NodeForm type={data.type} />
-        </div>
+      <DialogContent className="bg-[#474649] border-none sm:w-full sm:h-[85vh] sm:max-w-xl">
+        <VisuallyHidden>
+          <DialogTitle></DialogTitle>
+        </VisuallyHidden>
+        <NodeForm type={data.type} />
       </DialogContent>
     </Dialog>
   );

@@ -1,3 +1,5 @@
+import { Label } from "@radix-ui/react-select";
+
 export const nodeConfigs = {
   // form: {
   //   label: "Form",
@@ -27,9 +29,9 @@ export const nodeConfigs = {
     description: "Send and receive messages via Telegram bot.",
     credentials: [
       {
+        label: "Access Token",
         name: "Access Token",
         type: "text",
-        required: "true",
       },
     ],
     formFields: [
@@ -44,7 +46,7 @@ export const nodeConfigs = {
         label: "Message",
         name: "message",
         type: "text",
-        placeholder: "Message text",
+        placeholder: "",
       },
     ],
   },
@@ -119,13 +121,4 @@ export const nodeConfigs = {
       },
     ],
   },
-};
-
-export const credentials = {
-  telegram: [
-    {
-      label: "Access Token",
-      type: "text",
-    },
-  ],
 };

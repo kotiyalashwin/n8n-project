@@ -20,7 +20,7 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useCallback, useState } from "react";
-import { NodeSheet } from "@/components/SheetComponent";
+import { NodeSheet } from "@/components/NodesSheet";
 import { Button } from "@/components/ui/button";
 import { ManualNode } from "@/components/nodes/ManualNode";
 import { CredentialModal } from "@/components/CredentialModal";

@@ -13,3 +13,8 @@ export type newNodeParams = {
   type: string;
   variant: string;
 };
+
+export type Credentials = {
+  service: string;
+  info: { name: string; value: string }[] | { name: string; value: string };
+};

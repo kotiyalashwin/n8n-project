@@ -53,10 +53,10 @@ export const NodeLibrary = ({
                   variant: config.variant,
                 })
               }
-              className="absolute inset-0 flex items-center justify-end rounded-md  bg-gradient-to-r from-black/10  to-amber-800
+              className="absolute inset-0 flex items-center justify-end rounded-md  bg-gradient-to-r from-black/10 via-red-500/50 to-red-800
                 text-white font-bold text-sm opacity-0 hover:opacity-100 transition-opacity"
             >
-              <span className="text-white">Add this node</span>
+              <span className="text-white text-lg">Add this node</span>
               <ChevronRight />
             </div>
           </div>

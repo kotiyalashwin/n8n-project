@@ -26,7 +26,7 @@ export const NodeSheet = ({
     >
       <SheetContent className="bg-[#434343] ease-in-out ">
         <SheetHeader>
-          <SheetTitle className="text-amber-500 text-lg">
+          <SheetTitle className="text-red-500 text-lg">
             Explore all tools
           </SheetTitle>
           <SheetDescription className="text-white">

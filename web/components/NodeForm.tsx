@@ -8,47 +8,90 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "./ui/button";
 import { useState } from "react";
 import { CredentialModal } from "./CredentialModal";
+import { useCredentialStore } from "@/store/credentials";
 
 export default function NodeForm({ type }: { type: string }) {
   const config = nodeConfigs[type as keyof typeof nodeConfigs];
   const [credentialModal, setCredentialModal] = useState(false);
+  const { credentials } = useCredentialStore();
 
   if (!config) return <p>Unknown node type</p>;
 
   return (
-    <div className="relative">
-      <form className="flex relative flex-col gap-3">
-        <Select
-          onValueChange={(value) => {
-            if (value === "__add_new__") {
-              setCredentialModal(true);
-            }
-          }}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Add Credentials" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="__add_new__"> +Add Credentials</SelectItem>
-          </SelectContent>
-        </Select>
-        {config.formFields.map((field) => (
-          <input
-            key={field.name}
-            type={field.type}
-            name={field.name}
-            placeholder={field.placeholder}
-            required
-            className="border rounded p-2"
+    <div className="h-full">
+      <form className="flex h-full flex-col gap-4">
+        <h1 className="text-3xl font-semibold text-white mb-2 flex gap-2 items-center">
+          <img
+            src={`/icons/${type}.svg`}
+            alt={config.label}
+            className="w-8 h-8"
           />
+          {config.label} Configuration
+        </h1>
+
+        {/* Credentials Select */}
+
+        <div>
+          <label htmlFor="credentials" className="text-white">
+            Credentials:
+          </label>
+          <Select
+            onValueChange={(value) => {
+              if (value === "__add_new__") {
+                setCredentialModal(true);
+                return;
+              }
+            }}
+          >
+            <SelectTrigger className="w-[220px] border border-red-400/20 bg-[#2c2c2c] text-white text-lg rounded-lg shadow-sm focus:ring-2 focus:ring-red-400/70 focus:outline-none">
+              <SelectValue placeholder="Select Credentials" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#2c2c2c] text-white border border-red-400/40">
+              <SelectItem
+                // somehow make sure its value is not set
+                className="text-lg hover:bg-red-400/20 cursor-pointer"
+                value="__add_new__"
+              >
+                + Add Credentials
+              </SelectItem>
+              {credentials.map((c, i) => (
+                <SelectItem
+                  key={i}
+                  value={c.service}
+                  className="hover:bg-red-400/20 cursor-pointer text-lg"
+                >
+                  {c.service}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Dynamic Fields */}
+        {config.formFields.map((field) => (
+          <div className="flex flex-col gap-2">
+            <label className="text-white" htmlFor={field.label}>
+              {field.label}:
+            </label>
+            <input
+              key={field.name}
+              type={field.type}
+              name={field.name}
+              placeholder={field.placeholder}
+              required
+              className="border border-red-400/20 bg-[#363538] text-white placeholder-gray-400 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400/70 focus:outline-none shadow-sm"
+            />
+          </div>
         ))}
       </form>
+
       {credentialModal && (
         <CredentialModal
+          service={config.label}
           open={credentialModal}
+          credentialFields={config.credentials ? config.credentials : []}
           onOpenChange={setCredentialModal}
         />
       )}
