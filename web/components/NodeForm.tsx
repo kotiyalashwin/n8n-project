@@ -13,6 +13,8 @@ import { CredentialModal } from "./CredentialModal";
 import { useCredentialStore } from "@/store/credentials";
 import { Button } from "./ui/button";
 import { useNodeDataStore } from "@/store/nodedata";
+import { Loader } from "lucide-react";
+import { toast } from "sonner";
 
 export default function NodeForm({
   type,
@@ -25,8 +27,10 @@ export default function NodeForm({
   const [credentialModal, setCredentialModal] = useState(false);
   const { credentials } = useCredentialStore();
   const { addNodeData, getNodeData } = useNodeDataStore();
+  const [submitting, setSubmitting] = useState(false);
   const savedData = getNodeData(nodeId);
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    setSubmitting(true);
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
@@ -54,6 +58,14 @@ export default function NodeForm({
         },
       ],
     });
+    setTimeout(() => {
+      setSubmitting(false);
+      toast.success("Configuration Saved", {
+        classNames: {
+          toast: "",
+        },
+      });
+    }, 1000);
   };
 
   if (!config) return <p>Unknown node type</p>;
@@ -135,9 +147,16 @@ export default function NodeForm({
           hover:border-2 w-50 hover:translate-x-1 hover:-translate-y-0.5 hover:border-red-600 hover:bg-transparent border-0 text-white p-4 text-lg"
           variant={"outline"}
           type="submit"
-          //onclick => execute task
+          disabled={submitting}
+          id="submit_btn"
         >
-          Submit
+          {submitting ? (
+            <div className="flex items-center gap-2">
+              <Loader className="animate-spin" /> Submiting
+            </div>
+          ) : (
+            "Submit"
+          )}
         </Button>
       </form>
 

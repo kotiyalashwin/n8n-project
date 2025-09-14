@@ -9,6 +9,7 @@ import { useCredentialStore } from "@/store/credentials";
 import { Button } from "./ui/button";
 import { FormEvent } from "react";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { toast } from "sonner";
 
 type CredentialModalProps = {
   open: boolean;
@@ -35,6 +36,7 @@ export const CredentialModal = ({
     }));
 
     addCredentials({ service, info: credentials });
+    toast.success("Credentials Saved");
     onOpenChange(false);
   };
 
