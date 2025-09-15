@@ -6,7 +6,7 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Handle, NodeToolbar, Position } from "@xyflow/react";
-import NodeForm from "../NodeForm";
+import NodeForm from "./NodeForm";
 import { TaskNodeData } from "@/lib/types";
 import { CircleX } from "lucide-react";
 
@@ -43,7 +43,7 @@ export const AiNode = ({ data }: { data: TaskNodeData }) => {
           <DialogTitle>Fill this form</DialogTitle>
         </DialogHeader>
         <div>
-          <NodeForm type={data.type} />
+          <NodeForm nodeId={data.id} type={data.type} />
         </div>
       </DialogContent>
     </Dialog>

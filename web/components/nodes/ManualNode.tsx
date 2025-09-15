@@ -36,7 +36,7 @@ export const ManualNode = ({ data }: { data: ManualNodeData }) => {
           hover:text-white
           hover:border-2 hover:border-red-600 hover:bg-transparent border-0 text-white p-4 text-lg"
           variant={"outline"}
-          //onclick => execute task
+          onClick={data.executeFlow}
         >
           Execute Worflow
         </Button>

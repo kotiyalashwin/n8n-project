@@ -9,9 +9,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FormEvent, useState } from "react";
-import { CredentialModal } from "./CredentialModal";
+import { CredentialModal } from "../CredentialModal";
 import { useCredentialStore } from "@/store/credentials";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { useNodeDataStore } from "@/store/nodedata";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";

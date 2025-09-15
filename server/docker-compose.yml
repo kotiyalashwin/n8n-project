@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:15 # You can change to any supported version
+    container_name: n8n_clone
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432" # Expose to host
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+    name: pgdata

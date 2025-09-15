@@ -6,7 +6,7 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Handle, NodeToolbar, Position } from "@xyflow/react";
-import NodeForm from "../NodeForm";
+import NodeForm from "./NodeForm";
 import { Button } from "../ui/button";
 import { TaskNodeData } from "@/lib/types";
 import { useSheetStore } from "@/store/sheetStore";
