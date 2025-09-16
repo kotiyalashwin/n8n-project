@@ -82,22 +82,35 @@ export const nodeConfigs = {
     label: "Gmail",
     variant: "taskNode",
     description: "Send emails via Gmail with OAuth authentication.",
-    credentials: [],
+    credentials: [
+      {
+        label: "API Key (optional)",
+        name: "ResendKey",
+        placeholder: "Resend API Key",
+        type: "text",
+      },
+    ],
     formFields: [
       {
-        label: "",
+        label: "Recipient email",
         name: "recipient",
         type: "email",
-        placeholder: "Recipient email",
+        placeholder: "",
         required: true,
       },
       {
-        label: "",
+        label: "Subject",
         name: "subject",
         type: "text",
-        placeholder: "Email subject",
+        placeholder: "",
       },
-      { label: "", name: "body", type: "text", placeholder: "Email body" },
+      {
+        label: "Email Body",
+        name: "body",
+        type: "text",
+        placeholder: "Email body",
+        required: true,
+      },
     ],
   },
   ai: {

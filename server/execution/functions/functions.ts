@@ -1,5 +1,6 @@
 import axios from "axios";
 import { db } from "../../prisma/db";
+import { SendMail } from "../../helper/resend";
 
 export const ExecTelegram = async (
   workflowId: string,
@@ -56,5 +57,52 @@ export const ExecTelegram = async (
     throw new Error("Failed to send message");
   }
 
+  return true;
+};
+
+export const ExecGmail = async (
+  workflowId: string,
+  data: {
+    formData: { name: string; value: string }[];
+  }
+) => {
+  const recipientMail = data.formData
+    .find((field) => field.name === "recipient")
+    ?.value.trim();
+  const mailSubject = data.formData.find(
+    (field) => field.name === "subject"
+  )?.value;
+  const mailBody = data.formData.find((field) => field.name === "body")?.value;
+
+  if (!recipientMail || !mailSubject || !mailBody) {
+    throw new Error("ChatId and message are required");
+  }
+
+  const credentials = await db.credentials.findUnique({
+    where: {
+      workFlowId: workflowId,
+    },
+  });
+
+  if (!credentials) {
+    throw new Error("Credentials not found");
+  }
+
+  const credentialsData = credentials.credentials as {
+    info: { name: string; value: string }[];
+    service: string;
+  }[];
+
+  const gmailCreds = credentialsData.find((cred) => cred.service === "Gmail");
+  const resendKey = gmailCreds?.info
+    .find((info) => info.name === "ResendKey")
+    ?.value.trim();
+
+  await SendMail({
+    to: recipientMail,
+    subject: mailSubject,
+    body: mailBody,
+    key: resendKey,
+  });
   return true;
 };
