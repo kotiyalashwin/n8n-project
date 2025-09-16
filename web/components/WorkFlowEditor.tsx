@@ -26,8 +26,10 @@ import { embeddNodeData } from "@/helper/embeddFormData";
 import FullPageSaving from "./extras/FullPageSaving";
 import { ProviderWrapper } from "@/helper/Providers";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { saveWorkflow } from "@/helper/http";
+import { getWorkflow, saveWorkflow } from "@/helper/http";
 import { toast } from "sonner";
+import { useCredentialStore } from "@/store/credentials";
+import axios from "axios";
 
 // type WorkFLowEditorProps = {
 //   workfowId: string;
@@ -51,6 +53,7 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
   const nodesRef = useRef<Node[]>([]);
   const edgesRef = useRef<Edge[]>([]);
   const queryClient = useQueryClient();
+  const { addCredentials } = useCredentialStore();
 
   const { mutate, isPending } = useMutation({
     mutationFn: () =>
@@ -71,21 +74,29 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
   };
 
   useEffect(() => {
-    async function getWorkFlow(
-      workfowId: string
-    ): Promise<{ nodes: Node[]; edges: Edge[] }> {
-      return new Promise<{ nodes: Node[]; edges: [] }>((r) => {
-        setTimeout(() => {
-          r({ nodes: [], edges: [] });
-        }, 3000);
-      });
-    }
-
-    getWorkFlow(workFlowId).then((data) => {
-      setNodes((s) => s.concat(data.nodes));
-      setEdges((e) => e.concat(data.edges));
-      setLoading(false);
-    });
+    getWorkflow(workFlowId)
+      .then(({ nodesData, credentialData }) => {
+        if (nodesData?.nodes?.length > 0 && nodesData?.edges?.length > 0) {
+          const enhancedNodes = nodesData.nodes.map((node: Node) => ({
+            ...node,
+            data: {
+              ...node.data,
+              deleteNode: handleDeleteNode,
+              ...(node.type === "manualNode" && {
+                executeFlow: () => handleExecute(),
+              }),
+            },
+            draggable: true,
+          }));
+          setNodes((s) => s.concat(enhancedNodes));
+          setEdges((e) => e.concat(nodesData.edges));
+        }
+        if (credentialData.length > 0) {
+          addCredentials(credentialData);
+        }
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, [workFlowId]);
 
   useEffect(() => {
@@ -94,9 +105,19 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
   useEffect(() => {
     edgesRef.current = edges;
   }, [edges]);
-  const handleExecute = () => {
-    const formDataNodes = embeddNodeData(nodesRef.current);
-    //api request for execute
+  const handleExecute = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:8000/workflow/execute/${workFlowId}`
+      );
+      if (response.status !== 200) {
+        toast.error("Execution Failed");
+        return;
+      }
+      toast.success("Execution Successfull");
+    } catch {
+      toast.error("Execution Failed");
+    }
   };
 
   const handleAddNode = ({ name, type, variant }: newNodeParams) => {

@@ -23,6 +23,8 @@ model WorkFlows{
 
 model Credentials {
   id        String  @id @default(uuid())
-  service   String 
-  value     String
+  workFlowId String @unique
+  credentials Json
+
+  @@index([workFlowId])
 }

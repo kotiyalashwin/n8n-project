@@ -10,6 +10,7 @@ import { Button } from "./ui/button";
 import { FormEvent } from "react";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { toast } from "sonner";
+import { useParams } from "next/navigation";
 
 type CredentialModalProps = {
   open: boolean;
@@ -25,6 +26,7 @@ export const CredentialModal = ({
   credentialFields,
 }: CredentialModalProps) => {
   const { addCredentials } = useCredentialStore();
+  const { id } = useParams();
 
   const saveCredentials = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

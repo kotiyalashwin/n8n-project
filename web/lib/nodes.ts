@@ -29,8 +29,8 @@ export const nodeConfigs = {
     description: "Send and receive messages via Telegram bot.",
     credentials: [
       {
-        label: "Access Token",
-        name: "Access Token",
+        label: "Bot Token",
+        name: "Bot Token",
         type: "text",
       },
     ],
