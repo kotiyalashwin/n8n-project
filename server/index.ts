@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import { createServer } from "http";
 import { db } from "./prisma/db";
 import { saveCredentialSchema } from "./validations/credentials";
 import { saveSchema } from "./validations/save";
@@ -9,8 +10,14 @@ import {
   type RawNode,
 } from "./helper/serializenodes";
 import { Exec } from "./execution/run";
+import WebSocketManager from "./websocket";
 
 const app = express();
+const server = createServer(app);
+
+// Initialize WebSocket manager
+const wsManager = new WebSocketManager(server);
+
 app.use(express.json());
 app.use(
   cors({
@@ -35,6 +42,7 @@ app.get("/workflow/:id", async (req, res) => {
 
   res.json(workFlowData);
 });
+
 app.post("/workflow/execute/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -57,11 +65,17 @@ app.post("/workflow/execute/:id", async (req, res) => {
       res.status(402).json({ message: "runner node required" });
       return;
     }
-    const success = await Exec(runnerId, {
-      id,
-      nodes: execNodes,
-      edges: execEdges,
-    });
+    // Pass wsManager to execution
+    const success = await Exec(
+      runnerId,
+      {
+        id,
+        nodes: execNodes,
+        edges: execEdges,
+      },
+      wsManager
+    );
+
     if (success) {
       res.json({ message: "execution successfull" });
     } else {
@@ -72,6 +86,7 @@ app.post("/workflow/execute/:id", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
 app.post("/workflow/save", async (req, res) => {
   const { data, success, error } = saveSchema.safeParse(req.body);
 
@@ -97,6 +112,7 @@ app.post("/workflow/save", async (req, res) => {
   });
   res.json({ message: "Worflow saved successfully" });
 });
+
 app.post("/credentials/new", async (req, res) => {
   const { data, success, error } = saveCredentialSchema.safeParse(req.body);
 
@@ -119,6 +135,7 @@ app.post("/credentials/new", async (req, res) => {
   });
   res.json({ message: "credentials saved successfully" });
 });
+
 app.get("/credentials", async (req, res) => {
   const workflowId = req.query.workflowid as string;
 
@@ -147,6 +164,9 @@ app.get("/credentials", async (req, res) => {
   }
 });
 
-app.listen(8000, () => {
-  console.log("x8x backend up");
+// Export wsManager for use in other modules
+export { wsManager };
+
+server.listen(8000, () => {
+  console.log("x8x backend up with WebSocket support");
 });

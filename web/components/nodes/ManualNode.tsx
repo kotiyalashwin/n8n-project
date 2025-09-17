@@ -1,17 +1,54 @@
 import { Handle, NodeToolbar, Position } from "@xyflow/react";
-import { CircleX } from "lucide-react";
+import { CircleX, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { TaskNodeData } from "@/lib/types";
 import { useSheetStore } from "@/store/sheetStore";
+import { NodeStatusUpdate } from "@/hooks/useWebSocket";
 
 interface ManualNodeData extends TaskNodeData {
   executeFlow: () => void;
 }
 
-export const ManualNode = ({ data }: { data: ManualNodeData }) => {
+interface ManualNodeProps {
+  data: ManualNodeData;
+  nodeStatus?: NodeStatusUpdate;
+}
+
+export const ManualNode = ({ data, nodeStatus }: ManualNodeProps) => {
   const { openSheet } = useSheetStore();
+
+  const getStatusStyles = () => {
+    if (!nodeStatus) return "";
+    
+    switch (nodeStatus.status) {
+      case 'processing':
+        return "border-2 border-yellow-400 shadow-lg shadow-yellow-400/20";
+      case 'completed':
+        return "border-2 border-green-400 shadow-lg shadow-green-400/20";
+      case 'error':
+        return "border-2 border-red-400 shadow-lg shadow-red-400/20";
+      default:
+        return "";
+    }
+  };
+
+  const getStatusIcon = () => {
+    if (!nodeStatus) return null;
+    
+    switch (nodeStatus.status) {
+      case 'processing':
+        return <Loader2 className="w-4 h-4 text-yellow-400 animate-spin" />;
+      case 'completed':
+        return <CheckCircle className="w-4 h-4 text-green-400" />;
+      case 'error':
+        return <AlertCircle className="w-4 h-4 text-red-400" />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="relative bg-[#1B1720] text-white p-8 rounded-2xl flex items-center">
+    <div className={`relative bg-[#1B1720] text-white p-8 rounded-2xl flex items-center transition-all duration-300 ${getStatusStyles()}`}>
       <NodeToolbar isVisible={true} position={Position.Top}>
         <CircleX
           className="text-white"
@@ -37,18 +74,22 @@ export const ManualNode = ({ data }: { data: ManualNodeData }) => {
           hover:border-2 hover:border-red-600 hover:bg-transparent border-0 text-white p-4 text-lg"
           variant={"outline"}
           onClick={data.executeFlow}
+          disabled={nodeStatus?.status === 'processing'}
         >
-          Execute Worflow
+          {nodeStatus?.status === 'processing' ? 'Executing...' : 'Execute Worflow'}
         </Button>
       </NodeToolbar>
 
       <div className="flex items-center space-x-2">
         <Handle type="source" position={Position.Right} />
-        <img
-          src={`/icons/${data.type}.svg`}
-          alt={data.type}
-          className="w-16 h-16"
-        />
+        <div className="flex items-center space-x-2">
+          <img
+            src={`/icons/${data.type}.svg`}
+            alt={data.type}
+            className="w-16 h-16"
+          />
+          {getStatusIcon()}
+        </div>
         {data.count !== 1 && (
           <Handle
             type="target"

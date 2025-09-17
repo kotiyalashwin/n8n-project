@@ -30,12 +30,7 @@ import { getWorkflow, saveWorkflow } from "@/helper/http";
 import { toast } from "sonner";
 import { useCredentialStore } from "@/store/credentials";
 import axios from "axios";
-
-// type WorkFLowEditorProps = {
-//   workfowId: string;
-//   initialNodes: Node[] | [];
-//   initialEdges: Edge[] | [];
-// };
+import { useWebSocket } from "@/hooks/useWebSocket";
 
 export const WorkFlowEditor = ({ workFlowId }: { workFlowId: string }) => {
   return (
@@ -49,29 +44,61 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const { isOpen, openSheet, closeSheet } = useSheetStore();
-  const [loading, setLoading] = useState(true);
+  const { addCredentials } = useCredentialStore();
+  const queryClient = useQueryClient();
   const nodesRef = useRef<Node[]>([]);
   const edgesRef = useRef<Edge[]>([]);
-  const queryClient = useQueryClient();
-  const { addCredentials } = useCredentialStore();
+  const [loading, setLoading] = useState(true);
+
+  // WebSocket integration
+  const { getNodeStatus, clearNodeStatuses, isConnected } =
+    useWebSocket(workFlowId);
+
+  const nodeTypes: NodeTypes = {
+    manualNode: (props) => (
+      <ManualNode {...props} nodeStatus={getNodeStatus(props.data.id)} />
+    ),
+    taskNode: (props) => (
+      <TaskNode {...props} nodeStatus={getNodeStatus(props.data.id)} />
+    ),
+    aiNode: (props) => (
+      <AiNode {...props} nodeStatus={getNodeStatus(props.data.id)} />
+    ),
+  };
 
   const { mutate, isPending } = useMutation({
-    mutationFn: () =>
-      saveWorkflow(workFlowId, nodesRef.current, edgesRef.current),
-    onSuccess(data) {
-      toast.success(data);
+    mutationFn: () => {
+      const nodesData = embeddNodeData(nodesRef.current);
+      return saveWorkflow(workFlowId, nodesData, edgesRef.current);
     },
-    onError(e) {
-      console.log(e);
-      toast.error("Unable to save WorkFlow");
+    onSuccess: () => {
+      toast.success("Workflow saved successfully");
+    },
+    onError: () => {
+      toast.error("Failed to save workflow");
     },
   });
 
-  const nodeTypes: NodeTypes = {
-    taskNode: TaskNode,
-    aiNode: AiNode,
-    manualNode: ManualNode,
-  };
+  // useEffect(() => {
+  //   const fetchWorkflow = async () => {
+  //     try {
+  //       const { nodesData: data, credentialData } = await getWorkflow(
+  //         workFlowId
+  //       );
+  //       if (data?.nodes && data?.edges) {
+  //         setNodes(data.nodes);
+  //         setEdges(data.edges);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching workflow:", error);
+  //       toast.error("Failed to load workflow");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchWorkflow();
+  // }, [workFlowId]);
 
   useEffect(() => {
     getWorkflow(workFlowId)
@@ -91,22 +118,28 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
           setNodes((s) => s.concat(enhancedNodes));
           setEdges((e) => e.concat(nodesData.edges));
         }
-        if (credentialData.length > 0) {
-          addCredentials(credentialData);
-        }
+
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, [workFlowId]);
+  useEffect(() => {
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
     nodesRef.current = nodes;
   }, [nodes]);
+
   useEffect(() => {
     edgesRef.current = edges;
   }, [edges]);
+
   const handleExecute = async () => {
     try {
+      // Clear previous statuses
+      clearNodeStatuses();
+
       const response = await axios.post(
         `http://localhost:8000/workflow/execute/${workFlowId}`
       );
@@ -139,9 +172,11 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 
     setNodes((nds) => [...nds, newNode]);
   };
+
   const handleDeleteNode = (id: string) => {
     setNodes((n) => n.filter((node) => node.id !== id));
   };
+
   const onConnect = useCallback(
     (params: Edge | Connection) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
@@ -151,6 +186,19 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 
   return (
     <div className=" w-screen h-screen">
+      {/* Connection Status Indicator */}
+      <div className="absolute top-4 right-4 z-20">
+        <div
+          className={`px-3 py-1 rounded-full text-sm ${
+            isConnected
+              ? "bg-green-500/20 text-green-400 border border-green-500/30"
+              : "bg-red-500/20 text-red-400 border border-red-500/30"
+          }`}
+        >
+          {isConnected ? "Connected" : "Disconnected"}
+        </div>
+      </div>
+
       <ReactFlow
         style={{ height: "90%" }}
         minZoom={0.8}

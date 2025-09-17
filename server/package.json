@@ -15,11 +15,13 @@
   },
   "dependencies": {
     "@prisma/client": "^6.16.1",
+    "@types/ws": "^8.18.1",
     "axios": "^1.12.2",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "pocketflow": "^1.0.4",
     "resend": "^6.1.0",
+    "ws": "^8.18.3",
     "zod": "^4.1.8"
   }
 }

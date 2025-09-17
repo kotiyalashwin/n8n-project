@@ -75,7 +75,7 @@ export const ExecGmail = async (
   const mailBody = data.formData.find((field) => field.name === "body")?.value;
 
   if (!recipientMail || !mailSubject || !mailBody) {
-    throw new Error("ChatId and message are required");
+    throw new Error("Recipient, subject, and body are required");
   }
 
   const credentials = await db.credentials.findUnique({
@@ -106,3 +106,5 @@ export const ExecGmail = async (
   });
   return true;
 };
+
+// Add a simple manual trigger executor
