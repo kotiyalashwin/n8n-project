@@ -49,10 +49,26 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
   const nodesRef = useRef<Node[]>([]);
   const edgesRef = useRef<Edge[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSaved, setIsSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const isInitializingRef = useRef(true);
+  const handleExecuteRef = useRef<() => void>(() => {});
 
   // WebSocket integration
   const { getNodeStatus, clearNodeStatuses, isConnected } =
     useWebSocket(workFlowId);
+
+  // Utility: filter edges to only those whose endpoints exist
+  const filterEdgesForExistingNodes = useCallback(
+    (edgesToFilter: Edge[], nodesToCheck: Node[]) => {
+      const validIds = new Set(nodesToCheck.map((n) => n.id));
+      return edgesToFilter.filter(
+        (e) =>
+          validIds.has(e.source as string) && validIds.has(e.target as string)
+      );
+    },
+    []
+  );
 
   const nodeTypes: NodeTypes = {
     manualNode: (props) => (
@@ -66,80 +82,34 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
     ),
   };
 
-  const { mutate, isPending } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: () => {
       const nodesData = embeddNodeData(nodesRef.current);
-      return saveWorkflow(workFlowId, nodesData, edgesRef.current);
+      // filter dangling edges before save
+      const cleanedEdges = filterEdgesForExistingNodes(
+        edgesRef.current,
+        nodesRef.current
+      );
+      return saveWorkflow(workFlowId, nodesData, cleanedEdges);
     },
     onSuccess: () => {
+      setIsSaving(false);
+      setIsSaved(true);
       toast.success("Workflow saved successfully");
     },
     onError: () => {
+      setIsSaving(false);
       toast.error("Failed to save workflow");
     },
   });
 
-  // useEffect(() => {
-  //   const fetchWorkflow = async () => {
-  //     try {
-  //       const { nodesData: data, credentialData } = await getWorkflow(
-  //         workFlowId
-  //       );
-  //       if (data?.nodes && data?.edges) {
-  //         setNodes(data.nodes);
-  //         setEdges(data.edges);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching workflow:", error);
-  //       toast.error("Failed to load workflow");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchWorkflow();
-  // }, [workFlowId]);
-
-  useEffect(() => {
-    getWorkflow(workFlowId)
-      .then(({ nodesData, credentialData }) => {
-        if (nodesData?.nodes?.length > 0 && nodesData?.edges?.length > 0) {
-          const enhancedNodes = nodesData.nodes.map((node: Node) => ({
-            ...node,
-            data: {
-              ...node.data,
-              deleteNode: handleDeleteNode,
-              ...(node.type === "manualNode" && {
-                executeFlow: () => handleExecute(),
-              }),
-            },
-            draggable: true,
-          }));
-          setNodes((s) => s.concat(enhancedNodes));
-          setEdges((e) => e.concat(nodesData.edges));
-        }
-
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [workFlowId]);
-  useEffect(() => {
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    nodesRef.current = nodes;
-  }, [nodes]);
-
-  useEffect(() => {
-    edgesRef.current = edges;
-  }, [edges]);
-
   const handleExecute = async () => {
+    if (!isSaved) {
+      toast.warning("Please save the workflow first before executing");
+      return;
+    }
     try {
-      // Clear previous statuses
       clearNodeStatuses();
-
       const response = await axios.post(
         `http://localhost:8000/workflow/execute/${workFlowId}`
       );
@@ -153,6 +123,62 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
     }
   };
 
+  // Always keep ref pointing to the latest handler/state
+  useEffect(() => {
+    handleExecuteRef.current = handleExecute;
+  }, [isSaved]);
+
+  useEffect(() => {
+    getWorkflow(workFlowId)
+      .then(({ nodesData, credentialData }) => {
+        if (nodesData?.nodes?.length) {
+          const enhancedNodes = nodesData.nodes.map((node: Node) => ({
+            ...node,
+            data: {
+              ...node.data,
+              deleteNode: handleDeleteNode,
+              ...(node.type === "manualNode" && {
+                executeFlow: () => handleExecuteRef.current(),
+              }),
+            },
+            draggable: true,
+          }));
+          setNodes((s) => s.concat(enhancedNodes));
+          if (nodesData.edges.length > 0) {
+            const cleaned = filterEdgesForExistingNodes(
+              nodesData.edges,
+              enhancedNodes
+            );
+            setEdges((e) => e.concat(cleaned));
+          }
+          setIsSaved(true);
+        }
+
+        setLoading(false);
+      })
+      .catch((e) => {
+        console.log(e);
+        setLoading(false);
+      })
+      .finally(() => {
+        isInitializingRef.current = false;
+      });
+  }, [workFlowId, filterEdgesForExistingNodes]);
+
+  useEffect(() => {
+    nodesRef.current = nodes;
+  }, [nodes]);
+
+  useEffect(() => {
+    edgesRef.current = edges;
+  }, [edges]);
+
+  // When nodes change, drop dangling edges in memory and UI
+  useEffect(() => {
+    if (nodes.length === 0) return;
+    setEdges((prev) => filterEdgesForExistingNodes(prev, nodes));
+  }, [nodes, filterEdgesForExistingNodes, setEdges]);
+
   const handleAddNode = ({ name, type, variant }: newNodeParams) => {
     const newNodeId = crypto.randomUUID();
     const newNode: Node = {
@@ -165,48 +191,68 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
         type: type,
         deleteNode: handleDeleteNode,
         count: nodes.length + 1,
-        ...(variant === "manualNode" && { executeFlow: () => handleExecute() }),
+        ...(variant === "manualNode" && {
+          executeFlow: () => handleExecuteRef.current(),
+        }),
       },
       draggable: true,
     };
 
     setNodes((nds) => [...nds, newNode]);
+    setIsSaved(false);
   };
 
   const handleDeleteNode = (id: string) => {
     setNodes((n) => n.filter((node) => node.id !== id));
+    setIsSaved(false);
   };
 
   const onConnect = useCallback(
-    (params: Edge | Connection) => setEdges((eds) => addEdge(params, eds)),
+    (params: Edge | Connection) => {
+      setEdges((eds) => addEdge(params, eds));
+      setIsSaved(false);
+    },
     [setEdges]
+  );
+
+  const handleNodesChange = useCallback(
+    (changes: any) => {
+      onNodesChange(changes);
+      if (!isInitializingRef.current) {
+        const hasMeaningful = Array.isArray(changes)
+          ? changes.some((c) => c?.type && c.type !== "select")
+          : true;
+        if (hasMeaningful) setIsSaved(false);
+      }
+    },
+    [onNodesChange]
+  );
+
+  const handleEdgesChange = useCallback(
+    (changes: any) => {
+      onEdgesChange(changes);
+      if (!isInitializingRef.current) {
+        const hasMeaningful = Array.isArray(changes)
+          ? changes.some((c) => c?.type && c.type !== "select")
+          : true;
+        if (hasMeaningful) setIsSaved(false);
+      }
+    },
+    [onEdgesChange]
   );
 
   if (loading) return <FullScreenLoader />;
 
   return (
     <div className=" w-screen h-screen">
-      {/* Connection Status Indicator */}
-      <div className="absolute top-4 right-4 z-20">
-        <div
-          className={`px-3 py-1 rounded-full text-sm ${
-            isConnected
-              ? "bg-green-500/20 text-green-400 border border-green-500/30"
-              : "bg-red-500/20 text-red-400 border border-red-500/30"
-          }`}
-        >
-          {isConnected ? "Connected" : "Disconnected"}
-        </div>
-      </div>
-
       <ReactFlow
         style={{ height: "90%" }}
         minZoom={0.8}
         fitView={false}
         deleteKeyCode={null}
         nodeTypes={nodeTypes}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
+        onNodesChange={handleNodesChange}
+        onEdgesChange={handleEdgesChange}
         onConnect={onConnect}
         nodes={nodes}
         edges={edges}
@@ -227,10 +273,12 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
           hover:border-2 hover:border-red-600 hover:bg-transparent border-0 text-white p-4 text-lg"
             variant={"outline"}
             onClick={() => {
+              setIsSaving(true);
               mutate();
             }}
+            disabled={isSaving}
           >
-            Save Worflow
+            {isSaving ? "Saving..." : "Save Workflow"}
           </Button>
         )}
 
@@ -248,8 +296,6 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
         >
           x8x
         </div>
-
-        {isPending && <FullPageSaving />}
       </ReactFlow>
     </div>
   );

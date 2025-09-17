@@ -140,11 +140,6 @@ RESEND_API_KEY="your_resend_api_key_here"
 - **Configuration**: Add your Resend API key in the credentials section
 - **Usage**: Configure recipient email, subject, and body
 
-#### AI Agent
-
-- **Setup**: Currently supports OpenAI, Gemini, and Claude models
-- **Usage**: Enter your prompt and select the desired AI model
-
 ## 🗂️ Project Structure
 
 ```

@@ -115,7 +115,7 @@ export default function NodeForm({
                   value={c.service}
                   className="hover:bg-red-400/20 cursor-pointer text-lg"
                 >
-                  {c.service}
+                  {c.service}-{i + 1}
                 </SelectItem>
               ))}
             </SelectContent>
