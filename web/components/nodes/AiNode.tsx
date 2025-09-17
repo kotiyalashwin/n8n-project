@@ -19,13 +19,13 @@ interface AiNodeProps {
 export const AiNode = ({ data, nodeStatus }: AiNodeProps) => {
   const getStatusStyles = () => {
     if (!nodeStatus) return "";
-    
+
     switch (nodeStatus.status) {
-      case 'processing':
+      case "processing":
         return "border-2 border-yellow-400 shadow-lg shadow-yellow-400/20";
-      case 'completed':
+      case "completed":
         return "border-2 border-green-400 shadow-lg shadow-green-400/20";
-      case 'error':
+      case "error":
         return "border-2 border-red-400 shadow-lg shadow-red-400/20";
       default:
         return "";
@@ -34,13 +34,13 @@ export const AiNode = ({ data, nodeStatus }: AiNodeProps) => {
 
   const getStatusIcon = () => {
     if (!nodeStatus) return null;
-    
+
     switch (nodeStatus.status) {
-      case 'processing':
+      case "processing":
         return <Loader2 className="w-4 h-4 text-yellow-400 animate-spin" />;
-      case 'completed':
+      case "completed":
         return <CheckCircle className="w-4 h-4 text-green-400" />;
-      case 'error':
+      case "error":
         return <AlertCircle className="w-4 h-4 text-red-400" />;
       default:
         return null;
@@ -49,7 +49,9 @@ export const AiNode = ({ data, nodeStatus }: AiNodeProps) => {
 
   return (
     <Dialog>
-      <div className={`relative bg-transparent border border-dashed px-4 py-2 text-white p-8 flex items-center transition-all duration-300 ${getStatusStyles()}`}>
+      <div
+        className={`relative bg-transparent border border-dashed px-4 py-2 text-white p-8 flex items-center transition-all duration-300 ${getStatusStyles()}`}
+      >
         <NodeToolbar isVisible={true} position={Position.Top}>
           <CircleX
             className="text-white"

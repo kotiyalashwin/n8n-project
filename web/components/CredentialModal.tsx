@@ -44,7 +44,7 @@ export const CredentialModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#474649] border-none sm:w-full sm:min-h-[60vh] sm:max-h-[85vh] sm:max-w-6xl">
+      <DialogContent className="sm:w-full sm:min-h-[60vh] sm:max-h-[85vh] sm:max-w-6xl">
         <VisuallyHidden>
           <DialogTitle></DialogTitle>
         </VisuallyHidden>
@@ -54,14 +54,14 @@ export const CredentialModal = ({
           action=""
         >
           <div>
-            <h1 className="text-red-400 text-xl"> New Credentials</h1>
-            <p className="text-white/75">
+            <h1 className="text-primary text-xl"> New Credentials</h1>
+            <p className="text-muted-foreground">
               Add credentials for the required tool such to enable services.
             </p>
           </div>
           {credentialFields.map((f) => (
             <div className="flex flex-col gap-2">
-              <label className="text-white" htmlFor="">
+              <label className="text-foreground" htmlFor="">
                 {f.label}:
               </label>
               <input
@@ -69,15 +69,13 @@ export const CredentialModal = ({
                 type={f.type}
                 name={f.name}
                 required
-                className="border border-red-400/20 bg-[#363538] text-white placeholder-gray-400 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400/70 focus:outline-none shadow-sm"
+                className="border bg-card text-foreground placeholder-muted-foreground rounded-lg px-3 py-2 focus:ring-2 focus:ring-ring focus:outline-none shadow-sm"
               />
             </div>
           ))}
           <Button
-            className="bg-red-600/50
-          hover:text-white
-          hover:border-2 w-50 hover:translate-x-1 hover:-translate-y-0.5 hover:border-red-600 hover:bg-transparent border-0 text-white p-4 text-lg"
-            variant={"outline"}
+            className="w-fit"
+            variant={"default"}
             type="submit"
             //onclick => execute task
           >

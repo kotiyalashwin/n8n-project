@@ -24,12 +24,12 @@ export const NodeSheet = ({
       open={isOpen}
       onOpenChange={(value) => (value ? openSheet() : closeSheet())}
     >
-      <SheetContent className="bg-[#434343] ease-in-out ">
+      <SheetContent className="ease-in-out ">
         <SheetHeader>
-          <SheetTitle className="text-red-500 text-lg">
+          <SheetTitle className="text-primary text-lg">
             Explore all tools
           </SheetTitle>
-          <SheetDescription className="text-white">
+          <SheetDescription className="text-muted-foreground">
             x8x provides various tools for your workflows
           </SheetDescription>
           <div>

@@ -16,16 +16,16 @@ export const NodeLibrary = ({
 
   return (
     <div className="p-4 bg-none rounded-xl ">
-      <div className="flex shadow-lg items-center rounded-lg mb-4 px-3 py-2 ">
+      <div className="flex items-center rounded-lg mb-4 px-3 py-2 border bg-card shadow-sm ">
         <input
           type="text"
           placeholder="Search tools..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full text-white    placeholder:text-white outline-none"
+          className="w-full text-foreground placeholder:text-muted-foreground outline-none bg-transparent"
         />
         <CircleX
-          className="fill-white cursor-pointer"
+          className="text-muted-foreground cursor-pointer"
           onClick={() => setSearch("")}
         />
       </div>
@@ -34,7 +34,7 @@ export const NodeLibrary = ({
         {filteredNodes.map(([key, config]) => (
           <div
             key={key}
-            className="relative p-3 shadow-sm rounded-lg flex items-center gap-3  cursor-pointer"
+            className="relative p-3 rounded-lg flex items-center gap-3 cursor-pointer border bg-card shadow-xs hover:shadow-sm transition-shadow"
           >
             <img
               src={`/icons/${key}.svg`}
@@ -42,8 +42,10 @@ export const NodeLibrary = ({
               className="w-8 h-8"
             />
             <div>
-              <p className="font-semibold text-white">{config.label}</p>
-              <p className="text-sm text-white">{config.description}</p>
+              <p className="font-semibold text-foreground">{config.label}</p>
+              <p className="text-sm text-muted-foreground">
+                {config.description}
+              </p>
             </div>
             <div
               onClick={() =>
@@ -53,11 +55,10 @@ export const NodeLibrary = ({
                   variant: config.variant,
                 })
               }
-              className="absolute inset-0 flex items-center justify-end rounded-md  bg-gradient-to-r from-black/10 via-red-500/50 to-red-800
-                text-white font-bold text-sm opacity-0 hover:opacity-100 transition-opacity"
+              className="absolute inset-0 flex items-center justify-end rounded-md bg-primary/20 text-primary-foreground font-semibold text-sm opacity-0 hover:opacity-100 transition-opacity pr-3"
             >
-              <span className="text-white text-lg">Add this node</span>
-              <ChevronRight />
+              {/* <span className="text-black">Add this node</span> */}
+              <ChevronRight size={40} />
             </div>
           </div>
         ))}

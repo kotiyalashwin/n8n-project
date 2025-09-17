@@ -258,20 +258,16 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
         edges={edges}
         defaultViewport={{ x: 0, y: 0, zoom: 1 }}
       >
-        <Controls className="text-black" position="top-left" />
-        <Background gap={10} size={0.5} bgColor="#474649" />
+        <Controls className="text-foreground" position="top-left" />
+        <Background gap={10} size={0.5} bgColor="#1e1e1e" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 cursor-pointer">
           {nodes.length === 0 && <PlaceholderNode />}
         </div>
 
         {nodesRef.current.length > 0 && edgesRef.current.length > 0 && (
           <Button
-            className="bg-red-600/50
-            z-10 absolute 
-            left-1/2  top-10 -translate-x-1/2
-          hover:text-white
-          hover:border-2 hover:border-red-600 hover:bg-transparent border-0 text-white p-4 text-lg"
-            variant={"outline"}
+            className="z-10 absolute left-1/2 top-10 -translate-x-1/2"
+            variant={"default"}
             onClick={() => {
               setIsSaving(true);
               mutate();
@@ -289,13 +285,9 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
           addNewNode={handleAddNode}
         />
 
-        <div
-          className="text-[40rem] 
-          text-neutral-400/10
-          absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-        >
+        {/* <div className="text-[40rem] text-muted-foreground/10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           x8x
-        </div>
+        </div> */}
       </ReactFlow>
     </div>
   );

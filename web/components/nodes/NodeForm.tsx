@@ -73,7 +73,7 @@ export default function NodeForm({
   return (
     <div className="h-full">
       <form onSubmit={handleSubmit} className="flex h-full flex-col gap-4">
-        <h1 className="text-3xl font-semibold text-white mb-2 flex gap-2 items-center">
+        <h1 className="text-3xl font-semibold text-foreground mb-2 flex gap-2 items-center">
           <img
             src={`/icons/${type}.svg`}
             alt={config.label}
@@ -83,7 +83,7 @@ export default function NodeForm({
         </h1>
 
         <div>
-          <label htmlFor="credentials" className="text-white">
+          <label htmlFor="credentials" className="text-foreground">
             Credentials:
           </label>
           <Select
@@ -98,13 +98,13 @@ export default function NodeForm({
               }
             }}
           >
-            <SelectTrigger className="w-[220px] border border-red-400/20 bg-[#2c2c2c] text-white text-lg rounded-lg shadow-sm focus:ring-2 focus:ring-red-400/70 focus:outline-none">
+            <SelectTrigger className="w-[220px]">
               <SelectValue placeholder="Select Credentials" />
             </SelectTrigger>
-            <SelectContent className="bg-[#2c2c2c] text-white border border-red-400/40">
+            <SelectContent>
               <SelectItem
                 // somehow make sure its value is not set
-                className="text-lg hover:bg-red-400/20 cursor-pointer"
+                className="text-base cursor-pointer"
                 value="__add_new__"
               >
                 + Add Credentials
@@ -113,7 +113,7 @@ export default function NodeForm({
                 <SelectItem
                   key={i}
                   value={c.service}
-                  className="hover:bg-red-400/20 cursor-pointer text-lg"
+                  className="cursor-pointer text-base"
                 >
                   {c.service}-{i + 1}
                 </SelectItem>
@@ -125,7 +125,7 @@ export default function NodeForm({
         {/* Dynamic Fields */}
         {config.formFields.map((field, i) => (
           <div className="flex flex-col gap-2">
-            <label className="text-white" htmlFor={field.label}>
+            <label className="text-foreground" htmlFor={field.label}>
               {field.label}:
             </label>
             <input
@@ -137,15 +137,13 @@ export default function NodeForm({
               }
               placeholder={field.placeholder}
               required
-              className="border border-red-400/20 bg-[#363538] text-white placeholder-gray-400 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400/70 focus:outline-none shadow-sm"
+              className="border bg-card text-foreground placeholder-muted-foreground rounded-lg px-3 py-2 focus:ring-2 focus:ring-ring focus:outline-none shadow-sm"
             />
           </div>
         ))}
         <Button
-          className="bg-red-600/50
-          hover:text-white
-          hover:border-2 w-50 hover:translate-x-1 hover:-translate-y-0.5 hover:border-red-600 hover:bg-transparent border-0 text-white p-4 text-lg"
-          variant={"outline"}
+          className="w-fit"
+          variant={"default"}
           type="submit"
           disabled={submitting}
           id="submit_btn"

@@ -18,7 +18,7 @@ export const ManualNode = ({ data, nodeStatus }: ManualNodeProps) => {
   const { openSheet } = useSheetStore();
 
   const getStatusStyles = () => {
-    if (!nodeStatus) return "";
+    if (!nodeStatus) return "border-4";
 
     switch (nodeStatus.status) {
       case "processing":
@@ -34,17 +34,17 @@ export const ManualNode = ({ data, nodeStatus }: ManualNodeProps) => {
 
   return (
     <div
-      className={`relative bg-[#1B1720] text-white p-8 rounded-2xl flex items-center transition-all duration-300 ${getStatusStyles()}`}
+      className={`relative bg-card text-card-foreground p-8 rounded-2xl flex items-center transition-all duration-300  ${getStatusStyles()}`}
     >
       <NodeToolbar isVisible={true} position={Position.Top}>
         <CircleX
-          className="text-white"
+          className="text-muted-foreground"
           onClick={() => data.deleteNode(data.id)}
         />
       </NodeToolbar>
       <NodeToolbar isVisible={true} position={Position.Right}>
         <Button
-          className="bg-white p-4 h-10 w-10"
+          className="h-10 w-10"
           variant={"outline"}
           onClick={() => {
             console.log("clicked");
@@ -56,10 +56,8 @@ export const ManualNode = ({ data, nodeStatus }: ManualNodeProps) => {
       </NodeToolbar>
       <NodeToolbar isVisible={true} position={Position.Left}>
         <Button
-          className="bg-red-600/50
-          hover:text-white
-          hover:border-2 hover:border-red-600 hover:bg-transparent border-0 text-white p-4 text-lg"
-          variant={"outline"}
+          className="px-4"
+          variant={"default"}
           onClick={data.executeFlow}
           disabled={nodeStatus?.status === "processing"}
         >

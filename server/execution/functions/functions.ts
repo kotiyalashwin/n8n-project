@@ -106,5 +106,3 @@ export const ExecGmail = async (
   });
   return true;
 };
-
-// Add a simple manual trigger executor
