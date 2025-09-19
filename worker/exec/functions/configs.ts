@@ -6,11 +6,23 @@ export const execFunctions = {
   },
   telegram: (
     workflowid: string,
-    data: { formData: { name: string; value: string }[] }
+    data: {
+      formData: { name: string; value: string }[];
+      credentials: {
+        info: { name: string; value: string }[];
+        service: string;
+      }[];
+    }
   ) => ExecTelegram(workflowid, data),
   gmail: (
     workflowid: string,
-    data: { formData: { name: string; value: string }[] }
+    data: {
+      formData: { name: string; value: string }[];
+      credentials: {
+        info: { name: string; value: string }[];
+        service: string;
+      }[];
+    }
   ) => ExecGmail(workflowid, data),
 };
 
