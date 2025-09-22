@@ -1,8 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -45,85 +43,52 @@
 
 :root {
   --radius: 0.75rem;
-  /* Modern slate-based theme with purple accents */
-  --background: oklch(0.12 0.015 264);
-  --foreground: oklch(0.98 0.005 264);
-  --card: oklch(0.16 0.012 264);
-  --card-foreground: oklch(0.96 0.006 264);
-  --popover: oklch(0.16 0.012 264);
-  --popover-foreground: oklch(0.96 0.006 264);
-  --primary: oklch(0.69 0.14 285);
-  --primary-foreground: oklch(0.98 0.01 285);
-  --secondary: oklch(0.2 0.015 264);
-  --secondary-foreground: oklch(0.9 0.01 264);
-  --muted: oklch(0.18 0.012 264);
-  --muted-foreground: oklch(0.65 0.015 264);
-  --accent: oklch(0.22 0.02 264);
-  --accent-foreground: oklch(0.92 0.01 264);
-  --destructive: oklch(0.65 0.18 25);
-  --border: oklch(0.3 0.02 264);
-  --input: oklch(0.25 0.015 264);
-  --ring: oklch(0.69 0.14 285);
-  /* Modern vibrant chart palette */
-  --chart-1: oklch(0.69 0.14 285); /* Purple */
-  --chart-2: oklch(0.68 0.16 195); /* Cyan */
-  --chart-3: oklch(0.7 0.15 145); /* Emerald */
-  --chart-4: oklch(0.72 0.18 85); /* Amber */
-  --chart-5: oklch(0.66 0.17 15); /* Rose */
+  /* Soft light theme with darker off-white, #1e1e1e, and soft teal */
+  --background: oklch(0.88 0.015 80); /* Darker off-white for richer base */
+  --foreground: oklch(0.25 0.01 260); /* #1e1e1e for primary text */
+  --card: oklch(0.90 0.01 80); /* Slightly lighter off-white for cards */
+  --card-foreground: oklch(0.25 0.01 260); /* #1e1e1e for card text */
+  --popover: oklch(0.90 0.01 80); /* Slightly lighter off-white for popovers */
+  --popover-foreground: oklch(0.25 0.01 260); /* #1e1e1e for popover text */
+  --primary: oklch(0.65 0.12 190); /* Soft teal for buttons/links */
+  --primary-foreground: oklch(0.98 0.005 80); /* Near-white for button text */
+  --secondary: oklch(0.86 0.015 80); /* Muted off-white for secondary elements */
+  --secondary-foreground: oklch(0.35 0.01 260); /* Lighter #1e1e1e for secondary text */
+  --muted: oklch(0.87 0.015 80); /* Subtle off-white for muted backgrounds */
+  --muted-foreground: oklch(0.45 0.01 260); /* Softer #1e1e1e for muted text */
+  --accent: oklch(0.60 0.10 190); /* Muted teal for accents */
+  --accent-foreground: oklch(0.98 0.005 80); /* Near-white for accent text */
+  --destructive: oklch(0.65 0.15 10); /* Muted red for errors, distinct from core colors */
+  --border: oklch(0.84 0.015 80); /* Soft off-white for borders */
+  --input: oklch(0.87 0.015 80); /* Subtle off-white for input fields */
+  --ring: oklch(0.65 0.12 190); /* Soft teal for focus rings */
+  /* Chart palette with teal and #1e1e1e variations */
+  --chart-1: oklch(0.65 0.12 190); /* Soft teal */
+  --chart-2: oklch(0.30 0.015 260); /* #1e1e1e-based charcoal */
+  --chart-3: oklch(0.30 0.015 150); /* #1e1e1e with green hue */
+  --chart-4: oklch(0.30 0.015 90); /* #1e1e1e with yellow hue */
+  --chart-5: oklch(0.30 0.015 300); /* #1e1e1e with purple hue */
   /* Sidebar */
-  --sidebar: oklch(0.14 0.012 264);
-  --sidebar-foreground: oklch(0.96 0.006 264);
-  --sidebar-primary: oklch(0.69 0.14 285);
-  --sidebar-primary-foreground: oklch(0.98 0.01 285);
-  --sidebar-accent: oklch(0.22 0.02 264);
-  --sidebar-accent-foreground: oklch(0.92 0.01 264);
-  --sidebar-border: oklch(0.3 0.02 264);
-  --sidebar-ring: oklch(0.69 0.14 285);
-}
-
-.dark {
-  /* Deep professional dark theme */
-  --background: oklch(0.09 0.012 264);
-  --foreground: oklch(0.98 0.005 264);
-  --card: oklch(0.13 0.015 264);
-  --card-foreground: oklch(0.96 0.006 264);
-  --popover: oklch(0.13 0.015 264);
-  --popover-foreground: oklch(0.96 0.006 264);
-  --primary: oklch(0.73 0.16 285);
-  --primary-foreground: oklch(0.05 0.01 285);
-  --secondary: oklch(0.16 0.015 264);
-  --secondary-foreground: oklch(0.88 0.01 264);
-  --muted: oklch(0.15 0.012 264);
-  --muted-foreground: oklch(0.6 0.015 264);
-  --accent: oklch(0.18 0.02 264);
-  --accent-foreground: oklch(0.9 0.01 264);
-  --destructive: oklch(0.68 0.2 25);
-  --border: oklch(0.25 0.02 264);
-  --input: oklch(0.2 0.015 264);
-  --ring: oklch(0.73 0.16 285);
-  /* Enhanced chart colors for dark mode */
-  --chart-1: oklch(0.73 0.16 285); /* Bright purple */
-  --chart-2: oklch(0.72 0.18 195); /* Bright cyan */
-  --chart-3: oklch(0.74 0.17 145); /* Bright emerald */
-  --chart-4: oklch(0.76 0.2 85); /* Bright amber */
-  --chart-5: oklch(0.7 0.19 15); /* Bright rose */
-  /* Sidebar (dark) */
-  --sidebar: oklch(0.11 0.012 264);
-  --sidebar-foreground: oklch(0.96 0.006 264);
-  --sidebar-primary: oklch(0.73 0.16 285);
-  --sidebar-primary-foreground: oklch(0.05 0.01 285);
-  --sidebar-accent: oklch(0.18 0.02 264);
-  --sidebar-accent-foreground: oklch(0.9 0.01 264);
-  --sidebar-border: oklch(0.25 0.02 264);
-  --sidebar-ring: oklch(0.73 0.16 285);
+  --sidebar: oklch(0.86 0.015 80); /* Darker off-white for sidebar */
+  --sidebar-foreground: oklch(0.25 0.01 260); /* #1e1e1e for sidebar text */
+  --sidebar-primary: oklch(0.65 0.12 190); /* Soft teal for sidebar buttons */
+  --sidebar-primary-foreground: oklch(0.98 0.005 80); /* Near-white for sidebar button text */
+  --sidebar-accent: oklch(0.60 0.10 190); /* Muted teal for sidebar accents */
+  --sidebar-accent-foreground: oklch(0.98 0.005 80); /* Near-white for accent text */
+  --sidebar-border: oklch(0.84 0.015 80); /* Soft off-white for sidebar borders */
+  --sidebar-ring: oklch(0.65 0.12 190); /* Soft teal for sidebar focus rings */
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/50 transition-colors duration-200;
   }
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  /* Subtle hover effects for interactivity */
+  button, a {
+    @apply hover:brightness-110;
   }
 }

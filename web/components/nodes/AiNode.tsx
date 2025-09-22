@@ -32,20 +32,6 @@ export const AiNode = ({ data, nodeStatus }: AiNodeProps) => {
 		}
 	};
 
-	const getStatusIcon = () => {
-		if (!nodeStatus) return null;
-
-		switch (nodeStatus.status) {
-			case "processing":
-				return <Loader2 className="w-4 h-4 text-yellow-400 animate-spin" />;
-			case "completed":
-				return <CheckCircle className="w-4 h-4 text-green-400" />;
-			case "error":
-				return <AlertCircle className="w-4 h-4 text-red-400" />;
-			default:
-				return null;
-		}
-	};
 
 	return (
 		<Dialog>
@@ -67,9 +53,8 @@ export const AiNode = ({ data, nodeStatus }: AiNodeProps) => {
 							<img
 								src={`/icons/${data.type}.svg`}
 								alt={data.type}
-								className="w-16 h-16 justify-center-safe"
+								className="w-16 h-16 fill-accent justify-center-safe"
 							/>
-							{getStatusIcon()}
 						</div>
 						<span className="text-xl"> AI Agent</span>
 
