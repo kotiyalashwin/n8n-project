@@ -80,7 +80,7 @@ app.post("/workflow/execute/:id", async (req, res) => {
 		// } else {
 		//   res.json({ message: "execution failed" });
 		// }
-        res.json({message:"executed successfully"})
+		res.json({ message: "executed successfully" })
 	} catch (e) {
 		console.log(e);
 		res.status(500).json({ message: "Internal server error" });

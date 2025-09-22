@@ -52,7 +52,7 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 	const [isSaved, setIsSaved] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	const isInitializingRef = useRef(true);
-	const handleExecuteRef = useRef<() => void>(() => {});
+	const handleExecuteRef = useRef<() => void>(() => { });
 
 	// WebSocket integration
 	const { getNodeStatus, clearNodeStatuses, isConnected } =
@@ -261,7 +261,7 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 				<Background
 					gap={10}
 					size={0.5}
-					// bgColor="#1e1e1e"
+				// bgColor="#1e1e1e"
 				/>
 				<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 cursor-pointer">
 					{nodes.length === 0 && <PlaceholderNode />}

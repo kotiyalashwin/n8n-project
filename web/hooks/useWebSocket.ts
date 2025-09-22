@@ -37,7 +37,7 @@ export const useWebSocket = (workflowId: string) => {
 					return newMap;
 				});
 			} catch (error) {
-				console.error("Error parsing WebSocket message:", error);
+				//	console.error("Error parsing WebSocket message:", error);
 			}
 		};
 

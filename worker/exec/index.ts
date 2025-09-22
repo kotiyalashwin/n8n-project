@@ -26,7 +26,7 @@ export const ExecNodeFunction = async ({
 	try {
 		//not publishing
 		// console.log(`publishing to updates:${node.workflowId}`);
-        // console.log("recieved data:", node.data)
+		// console.log("recieved data:", node.data)
 		await redis.publish(
 			`updates:${node.workflowId}`,
 			JSON.stringify({ nodeId: node.nodeId, status: "processing" }),
@@ -44,7 +44,8 @@ export const ExecNodeFunction = async ({
 			JSON.stringify({ nodeId: node.nodeId, status: "completed" }),
 		);
 		return true;
-	} catch {
+	} catch (e) {
+		console.log(e)
 		await redis.publish(
 			`updates:${node.workflowId}`,
 			JSON.stringify({ nodeId: node.nodeId, status: "error" }),

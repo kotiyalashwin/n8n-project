@@ -19,7 +19,7 @@ redis.on("connect", async () => {
 			continue;
 		}
 		await ExecNodeFunction({ redis, node: parseData });
-		await new Promise((r) => setTimeout(r, 3000));
+		await new Promise((r) => setTimeout(r, 1500));
 	}
 });
 export type RedisClient = typeof redis;
