@@ -204,7 +204,7 @@ export default function NodeForm({
 
 				{/* Dynamic Fields */}
 				{config.formFields.map((field, i) => (
-					<div className="flex flex-col gap-2">
+					<div key={i} className="flex flex-col gap-2">
 						<label className="text-foreground" htmlFor={field.label}>
 							{field.label}:
 						</label>

@@ -1,22 +1,17 @@
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-	DialogDescription,
-} from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { FormEvent } from "react";
+import { toast } from "sonner";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useCredentialStore } from "@/store/credentials";
 import { Button } from "./ui/button";
-import { FormEvent } from "react";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { toast } from "sonner";
-import { useParams } from "next/navigation";
 
 type CredentialModalProps = {
 	open: boolean;
 	service: string;
 	onOpenChange: (val: boolean) => void;
-	credentialFields: { name: string; type: string; label: string, required: boolean }[] | [];
+	credentialFields:
+		| { name: string; type: string; label: string; required: boolean }[]
+		| [];
 };
 
 export const CredentialModal = ({
@@ -26,7 +21,6 @@ export const CredentialModal = ({
 	credentialFields,
 }: CredentialModalProps) => {
 	const { addCredentials } = useCredentialStore();
-	const { id } = useParams();
 
 	const saveCredentials = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -59,8 +53,8 @@ export const CredentialModal = ({
 							Add credentials for the required tool such to enable services.
 						</p>
 					</div>
-					{credentialFields.map((f) => (
-						<div className="flex flex-col gap-2">
+					{credentialFields.map((f,i) => (
+						<div key={i} className="flex flex-col gap-2">
 							<label className="text-foreground" htmlFor="">
 								{f.label}:
 							</label>
@@ -77,7 +71,7 @@ export const CredentialModal = ({
 						className="w-fit"
 						variant={"default"}
 						type="submit"
-					//onclick => execute task
+						//onclick => execute task
 					>
 						Save
 					</Button>

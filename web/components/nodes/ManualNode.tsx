@@ -1,10 +1,10 @@
 import { Handle, NodeToolbar, Position } from "@xyflow/react";
-import { CircleX, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { CircleX, } from "lucide-react";
 import { Button } from "../ui/button";
 import { TaskNodeData } from "@/lib/types";
 import { useSheetStore } from "@/store/sheetStore";
 import { NodeStatusUpdate } from "@/hooks/useWebSocket";
-
+import Image from "next/image";
 interface ManualNodeData extends TaskNodeData {
 	executeFlow: () => void;
 }
@@ -69,7 +69,7 @@ export const ManualNode = ({ data, nodeStatus }: ManualNodeProps) => {
 			<div className="flex items-center space-x-2">
 				<Handle type="source" style={{ width: '10px', height: '10px' }} position={Position.Right} />
 				<div className="flex items-center space-x-2">
-					<img
+					<Image
 						src={`/icons/${data.type}.svg`}
 						alt={data.type}
 						className="w-16 h-16"

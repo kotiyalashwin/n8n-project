@@ -17,10 +17,10 @@ export const saveWorkflow = async (
       edges,
     };
     const response = await axios.post(
-      "http://localhost:8000/workflow/save",
+      "http://ec2-34-203-28-254.compute-1.amazonaws.com:8000/workflow/save",
       body
     );
-    await axios.post("http://localhost:8000/credentials/new", {
+    await axios.post("http://ec2-34-203-28-254.compute-1.amazonaws.com:8000/credentials/new", {
       workflowid: workFlowId,
       credentials,
     });
@@ -35,7 +35,7 @@ export const saveWorkflow = async (
 export const getWorkflow = async (workflowid: string) => {
   try {
     const response = await axios.get(
-      `http://localhost:8000/workflow/${workflowid}`
+      `http://ec2-34-203-28-254.compute-1.amazonaws.com:8000/workflow/${workflowid}`
     );
     const nodesData = await response.data;
     const credentialData = await getCredentials(workflowid);
@@ -48,7 +48,7 @@ export const getWorkflow = async (workflowid: string) => {
 
 const getCredentials = async (workflowid: string) => {
   try {
-    const response = await axios.get(`http://localhost:8000/credentials`, {
+    const response = await axios.get(`http://ec2-34-203-28-254.compute-1.amazonaws.com:8000/credentials`, {
       params: {
         workflowid,
       },

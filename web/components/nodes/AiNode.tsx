@@ -8,8 +8,9 @@ import {
 import { Handle, NodeToolbar, Position } from "@xyflow/react";
 import NodeForm from "./NodeForm";
 import { TaskNodeData } from "@/lib/types";
-import { CircleX, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { CircleX} from "lucide-react";
 import { NodeStatusUpdate } from "@/hooks/useWebSocket";
+import Image from "next/image";
 
 interface AiNodeProps {
 	data: TaskNodeData;
@@ -50,7 +51,7 @@ export const AiNode = ({ data, nodeStatus }: AiNodeProps) => {
 					<div className="flex w-full items-center justify-evenly">
 						<Handle type="source" position={Position.Right} />
 						<div className="flex items-center space-x-2">
-							<img
+							<Image
 								src={`/icons/${data.type}.svg`}
 								alt={data.type}
 								className="w-16 h-16 fill-accent justify-center-safe"

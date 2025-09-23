@@ -12,7 +12,7 @@ import { useSheetStore } from "@/store/sheetStore";
 import { CircleX } from "lucide-react";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { NodeStatusUpdate } from "@/hooks/useWebSocket";
-
+import Image from "next/image";
 interface TaskNodeProps {
 	data: TaskNodeData;
 	nodeStatus?: NodeStatusUpdate;
@@ -64,7 +64,7 @@ export const TaskNode = ({ data, nodeStatus }: TaskNodeProps) => {
 					<div className="flex items-center space-x-2">
 						<Handle type="source" style={{ width: '10px', height: '10px' }} position={Position.Right} />
 						<div className="flex items-center space-x-2">
-							<img
+							<Image
 								src={`/icons/${data.type}.svg`}
 								alt={data.type}
 								className="w-16 h-16"

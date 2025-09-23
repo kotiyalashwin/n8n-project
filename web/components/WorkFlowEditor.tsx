@@ -26,12 +26,10 @@ import { toast } from "sonner";
 import { embeddNodeData } from "@/helper/embeddFormData";
 import { getWorkflow, saveWorkflow } from "@/helper/http";
 import { ProviderWrapper } from "@/helper/Providers";
+import { generateRandomString } from "@/helper/randomUUID";
 import { useWebSocket } from "@/hooks/useWebSocket";
-import { useCredentialStore } from "@/store/credentials";
 import { useSheetStore } from "@/store/sheetStore";
 import FullScreenLoader from "./extras/FullPageLoader";
-import FullPageSaving from "./extras/FullPageSaving";
-import { generateRandomString } from "@/helper/randomUUID";
 
 export const WorkFlowEditor = ({ workFlowId }: { workFlowId: string }) => {
 	return (
@@ -45,14 +43,13 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 	const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 	const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
 	const { isOpen, openSheet, closeSheet } = useSheetStore();
-	const { addCredentials } = useCredentialStore();
 	const nodesRef = useRef<Node[]>([]);
 	const edgesRef = useRef<Edge[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [isSaved, setIsSaved] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	const isInitializingRef = useRef(true);
-	const handleExecuteRef = useRef<() => void>(() => { });
+	const handleExecuteRef = useRef<() => void>(() => {});
 
 	// WebSocket integration
 	const { getNodeStatus, clearNodeStatuses } = useWebSocket(workFlowId);
@@ -68,6 +65,31 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 		},
 		[],
 	);
+
+	const handleDeleteNode = useCallback((id: string) => {
+		setNodes((n) => n.filter((node) => node.id !== id));
+		setIsSaved(false);
+	}, [setNodes]);
+
+	const handleExecute = useCallback(async () => {
+		// if (!isSaved) {
+		//   toast.warning("Please save the workflow first before executing");
+		//   return;
+		// }
+		try {
+			clearNodeStatuses();
+			const response = await axios.post(
+				`http://ec2-34-203-28-254.compute-1.amazonaws.com:8000/workflow/execute/${workFlowId}`,
+			);
+			if (response.status !== 200) {
+				toast.error("Execution Failed");
+				return;
+			}
+			toast.success("Execution Successfull");
+		} catch {
+			toast.error("Execution Failed");
+		}
+	}, [workFlowId, clearNodeStatuses]);
 
 	const nodeTypes: NodeTypes = {
 		manualNode: (props) => (
@@ -102,33 +124,15 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 		},
 	});
 
-	const handleExecute = async () => {
-		// if (!isSaved) {
-		//   toast.warning("Please save the workflow first before executing");
-		//   return;
-		// }
-		try {
-			clearNodeStatuses();
-			const response = await axios.post(
-				`http://localhost:8000/workflow/execute/${workFlowId}`,
-			);
-			if (response.status !== 200) {
-				toast.error("Execution Failed");
-				return;
-			}
-			toast.success("Execution Successfull");
-		} catch {
-			toast.error("Execution Failed");
-		}
-	};
-
+	// Update the ref whenever handleExecute changes
 	useEffect(() => {
 		handleExecuteRef.current = handleExecute;
-	}, [isSaved]);
+	}, [handleExecute]);
 
+	// Load workflow data on component mount
 	useEffect(() => {
 		getWorkflow(workFlowId)
-			.then(({ nodesData, credentialData }) => {
+			.then(({ nodesData }) => {
 				if (nodesData?.nodes?.length) {
 					const enhancedNodes = nodesData.nodes.map((node: Node) => ({
 						...node,
@@ -156,14 +160,15 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 				}, 2500);
 			})
 			.catch((e) => {
-				console.log(e);
+				console.error('Failed to load workflow:', e);
 				setLoading(false);
 			})
 			.finally(() => {
 				isInitializingRef.current = false;
 			});
-	}, [workFlowId, filterEdgesForExistingNodes]);
+	}, [workFlowId, filterEdgesForExistingNodes, handleDeleteNode, setNodes, setEdges]);
 
+	// Sync refs with state
 	useEffect(() => {
 		nodesRef.current = nodes;
 	}, [nodes]);
@@ -172,7 +177,7 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 		edgesRef.current = edges;
 	}, [edges]);
 
-	const handleAddNode = ({ name, type, variant }: newNodeParams) => {
+	const handleAddNode = useCallback(({ name, type, variant }: newNodeParams) => {
 		const newNodeId = generateRandomString(10);
 		const newNode: Node = {
 			id: newNodeId,
@@ -193,12 +198,7 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 
 		setNodes((nds) => [...nds, newNode]);
 		setIsSaved(false);
-	};
-
-	const handleDeleteNode = (id: string) => {
-		setNodes((n) => n.filter((node) => node.id !== id));
-		setIsSaved(false);
-	};
+	}, [nodes.length, handleDeleteNode, setNodes]);
 
 	const onConnect = useCallback(
 		(params: Edge | Connection) => {
@@ -209,6 +209,7 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 	);
 
 	const handleNodesChange = useCallback(
+        //@ts-ignore
 		(changes: any) => {
 			onNodesChange(changes);
 			if (!isInitializingRef.current) {
@@ -222,6 +223,7 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 	);
 
 	const handleEdgesChange = useCallback(
+        //@ts-ignore
 		(changes: any) => {
 			onEdgesChange(changes);
 			if (!isInitializingRef.current) {
@@ -234,15 +236,21 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 		[onEdgesChange],
 	);
 
-	if (loading)
+	const handleSaveWorkflow = useCallback(() => {
+		setIsSaving(true);
+		mutate();
+	}, [mutate]);
+
+	if (loading) {
 		return (
 			<div className="relative h-full w-full">
 				<FullScreenLoader />
 			</div>
 		);
+	}
 
 	return (
-		<div className=" w-screen h-screen">
+		<div className="w-screen h-screen">
 			<ReactFlow
 				style={{ height: "90%" }}
 				minZoom={0.8}
@@ -257,11 +265,7 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 				defaultViewport={{ x: 0, y: 0, zoom: 1 }}
 			>
 				<Controls className="text-black" position="top-left" />
-				<Background
-					gap={10}
-					size={0.5}
-					bgColor="#1e1e1e"
-				/>
+				<Background gap={10} size={0.5} bgColor="#1e1e1e" />
 				<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 cursor-pointer">
 					{nodes.length === 0 && <PlaceholderNode />}
 				</div>
@@ -270,10 +274,7 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 					<Button
 						className="z-10 absolute left-1/2 top-10 -translate-x-1/2"
 						variant={"default"}
-						onClick={() => {
-							setIsSaving(true);
-							mutate();
-						}}
+						onClick={handleSaveWorkflow}
 						disabled={isSaving}
 					>
 						{isSaving ? "Saving..." : "Save Workflow"}
@@ -286,10 +287,6 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 					openSheet={openSheet}
 					addNewNode={handleAddNode}
 				/>
-
-				{/* <div className="text-[40rem] text-muted-foreground/10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          x8x
-        </div> */}
 			</ReactFlow>
 		</div>
 	);
