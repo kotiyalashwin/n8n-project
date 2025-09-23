@@ -1,10 +1,8 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { NewWorkFlow } from "@/components/NewFlowButton";
 import { HomeIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export function Sidebar() {
 	const pathname = usePathname();
@@ -17,7 +15,7 @@ export function Sidebar() {
 			<div className="">
 				<NewWorkFlow />
 			</div>
-			<Link href="/" className={`${pathname === "/" ? "border border-accent" : " hover:border-accent-foreground hover:border-2"} w-full flex gap-2 p-4 rounded-md  items-center`}>
+			<Link href="/" className={`${pathname === "/" ? "border border-accent" : " hover:border-accent hover:border-2"} w-full flex gap-2 p-4 rounded-md  items-center`}>
 
 				<HomeIcon size={30} />
 				<p className="text-lg">HOME</p>

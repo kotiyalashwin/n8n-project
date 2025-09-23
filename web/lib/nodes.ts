@@ -26,7 +26,7 @@ export const nodeConfigs = {
 	telegram: {
 		label: "Telegram",
 		variant: "taskNode",
-		description: "Send and receive messages via Telegram bot.",
+		description: "Send messages via Telegram bot.",
 		credentials: [
 			{
 				label: "Bot Token",
@@ -51,38 +51,10 @@ export const nodeConfigs = {
 			},
 		],
 	},
-	whatsapp: {
-		label: "WhatsApp",
-		variant: "taskNode",
-		description: "Automate WhatsApp messaging using API integration.",
-		credentials: [],
-		formFields: [
-			{
-				label: "",
-				name: "phoneNumber",
-				type: "text",
-				placeholder: "Recipient phone number",
-				required: true,
-			},
-			{
-				label: "",
-				name: "apiKey",
-				type: "password",
-				placeholder: "API Key",
-				required: true,
-			},
-			{
-				label: "",
-				name: "message",
-				type: "text",
-				placeholder: "Message content",
-			},
-		],
-	},
 	gmail: {
 		label: "Gmail",
 		variant: "taskNode",
-		description: "Send emails via Gmail with OAuth authentication.",
+		description: "Send emails powered by Resend",
 		credentials: [
 			{
 				label: "API Key (optional)",
@@ -119,7 +91,7 @@ export const nodeConfigs = {
 		label: "Agent",
 		variant: "aiNode",
 		credentials: [],
-		description: "Send a prompt to an AI model and get a response.",
+		description: "Prompt based tool calling for the other nodes.",
 		formFields: [
 			{
 				label: "User Prompt",

@@ -20,7 +20,7 @@ export const SendMail = async ({ to, subject, body, key }: SendMailProps) => {
     throw new Error("Unable to initialize RESEND");
   }
   await resend.emails.send({
-    from: "onboarding@resend.dev",
+    from: "x8x@woksh.com",
     to,
     subject: subject || "Powered by x8x",
     html: body,

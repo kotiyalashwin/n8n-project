@@ -8,7 +8,7 @@ import { TaskNode } from "@/components/nodes/TaskNode";
 import { Button } from "@/components/ui/button";
 import { newNodeParams } from "@/lib/types";
 import "@xyflow/react/dist/style.css";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
 	addEdge,
 	Background,
@@ -31,6 +31,7 @@ import { useCredentialStore } from "@/store/credentials";
 import { useSheetStore } from "@/store/sheetStore";
 import FullScreenLoader from "./extras/FullPageLoader";
 import FullPageSaving from "./extras/FullPageSaving";
+import { generateRandomString } from "@/helper/randomUUID";
 
 export const WorkFlowEditor = ({ workFlowId }: { workFlowId: string }) => {
 	return (
@@ -45,7 +46,6 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 	const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
 	const { isOpen, openSheet, closeSheet } = useSheetStore();
 	const { addCredentials } = useCredentialStore();
-	const queryClient = useQueryClient();
 	const nodesRef = useRef<Node[]>([]);
 	const edgesRef = useRef<Edge[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -55,8 +55,7 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 	const handleExecuteRef = useRef<() => void>(() => { });
 
 	// WebSocket integration
-	const { getNodeStatus, clearNodeStatuses, isConnected } =
-		useWebSocket(workFlowId);
+	const { getNodeStatus, clearNodeStatuses } = useWebSocket(workFlowId);
 
 	// Utility: filter edges to only those whose endpoints exist
 	const filterEdgesForExistingNodes = useCallback(
@@ -154,7 +153,7 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 				}
 				setTimeout(() => {
 					setLoading(false);
-				}, 1500);
+				}, 2500);
 			})
 			.catch((e) => {
 				console.log(e);
@@ -174,7 +173,7 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 	}, [edges]);
 
 	const handleAddNode = ({ name, type, variant }: newNodeParams) => {
-		const newNodeId = crypto.randomUUID();
+		const newNodeId = generateRandomString(10);
 		const newNode: Node = {
 			id: newNodeId,
 			type: variant,

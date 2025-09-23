@@ -1,6 +1,27 @@
 import axios from "axios";
 import { SendMail } from "../../resend";
-import { RunAgent, type DataConfig } from "../agent";
+import { type DataConfig, RunAgent } from "../agent";
+import { credConfig } from "../credConfig";
+
+type Credentials = { service: string; info: { name: string; value: string }[] };
+
+const getCreds = (
+	tools: string[],
+	infos: { name: string; value: string }[],
+): Credentials[] | [] => {
+	const credentials: Credentials[] = [];
+	if (infos.length === 0) return [];
+	for (const tool of tools) {
+		let toolCredInfo: { name: string; value: string }[] = [];
+		const toolcredConfig = credConfig[tool as keyof typeof credConfig];
+		for (const cred of toolcredConfig.credentials) {
+            infos.forEach(i => {if(cred.name === i.name)toolCredInfo.push(i)} )
+
+		}
+        credentials.push({service : toolcredConfig.service , info : toolCredInfo})
+	}
+	return credentials;
+};
 
 export const ExecTelegram = async (
 	workflowId: string,
@@ -12,7 +33,7 @@ export const ExecTelegram = async (
 		}[];
 	},
 ) => {
-	console.log("reached exec telegram")
+	console.log("reached exec telegram");
 	try {
 		const chatId = data.formData
 			.find((field) => field.name === "chatId")
@@ -86,10 +107,17 @@ export const ExecGmail = async (
 		throw new Error("Recipient, subject, and body are required");
 	}
 	const { credentials } = data;
-	if (!data.credentials) { throw new Error("Credentials not found"); }
-	const credentialsData = credentials as { info: { name: string; value: string }[]; service: string; }[];
+	if (!data.credentials) {
+		throw new Error("Credentials not found");
+	}
+	const credentialsData = credentials as {
+		info: { name: string; value: string }[];
+		service: string;
+	}[];
 	const gmailCreds = credentialsData.find((cred) => cred.service === "Gmail");
-	const resendKey = gmailCreds?.info.find((info) => info.name === "ResendKey")?.value.trim();
+	const resendKey = gmailCreds?.info
+		.find((info) => info.name === "ResendKey")
+		?.value.trim();
 
 	await SendMail({
 		to: recipientMail,
@@ -100,8 +128,6 @@ export const ExecGmail = async (
 	return true;
 };
 
-
-
 export const ExecAgentWrapper = async (data: {
 	formData: { name: string; value: string[] | string }[];
 	credentials: {
@@ -109,35 +135,36 @@ export const ExecAgentWrapper = async (data: {
 		service: string;
 	}[];
 }) => {
-	//console.log("execAgentCalled")
+	//consokle.log("execAgentCalled")
 	try {
-		const rawTools = data.formData.find(d => d.name === "tools")?.value; // "[\"telegram"\ , \"gmail"\]"
-		const agentCreds = data.credentials.find(c => c.service === "Agent");
+		const rawTools = data.formData.find((d) => d.name === "tools")?.value; // "[\"telegram"\ , \"gmail"\]"
+		const agentCreds =
+			data.credentials.find((c) => c.service === "Agent")?.info ?? [];
 
-		const botToken = agentCreds?.info.find(i => i.name === "Bot Token");
-		if (!botToken) {
-			throw new Error("Credentials not found");
-		}
-
-		const telegramCredentials = {
-			service: "Telegram",
-			info: [botToken], // must be an array!
-		};
-		const filteredFormData = data.formData.filter(d => d.name !== "tools") as {
+		const tools = JSON.parse(rawTools);
+		const credentials = getCreds(tools , agentCreds)
+		const filteredFormData = data.formData.filter(
+			(d) => d.name !== "tools",
+		) as {
 			name: string;
 			value: string;
 		}[];
 		//if (typeof tools === "string") return;
-		const tools = JSON.parse(rawTools)
 		const agentPayload: DataConfig = {
 			tools: tools?.length !== 0 ? tools : [],
 			data: {
 				formData: filteredFormData,
-				credentials: [telegramCredentials],
+				credentials: [...credentials],
 			},
 		};
-		try { await RunAgent(agentPayload) } catch (e) { console.log(e) };
+		try {
+			await RunAgent(agentPayload);
+		} catch (e) {
+			console.log(e);
+		}
 		return true;
-	} catch (e) { console.log(e); return false }
-}
-
+	} catch (e) {
+		console.log(e);
+		return false;
+	}
+};

@@ -22,7 +22,11 @@ export default function RootLayout({
 			<body
 				className={` ${inter.variable} antialiased`}
 			>
-				<div className="min-h-screen w-screen grid grid-cols-[200px_1fr]">
+				<div className="flex lg:hidden min-h-screen justify-center items-center">
+					<p className="text-5xl px-10">x8x is meant to run on desktops.
+						Kindly visit x8x.woksh.com on larger screens</p>
+				</div>
+				<div className="hidden min-h-screen w-screen lg:grid grid-cols-[200px_1fr]">
 					<Sidebar />
 					<main className="min-h-screen overflow-hidden">{children}</main>
 				</div>

@@ -104,7 +104,7 @@ export async function RunAgent(inputData: DataConfig) {
 		console.log("User asked for: ", result.messages[0].content);
 		console.log("--------------TOOLS CALLED--------------------------");
 		for (const toolCall of result.messages[1].tool_calls) {
-			console.log(`Agent called ${toolCall.name} and to send : ${toolCall.args.message} \n`)
+			console.log(`Agent called ${toolCall.name} and  send : ${toolCall.args.message} to ${toolCall.args.to} \n`)
 			//console.log(toolCall)
 		}
 		console.log("--------------AGENT RESPONSE------------------------ \n")
