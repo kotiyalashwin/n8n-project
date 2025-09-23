@@ -46,7 +46,6 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 	const nodesRef = useRef<Node[]>([]);
 	const edgesRef = useRef<Edge[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [isSaved, setIsSaved] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	const isInitializingRef = useRef(true);
 	const handleExecuteRef = useRef<() => void>(() => {});
@@ -68,7 +67,6 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 
 	const handleDeleteNode = useCallback((id: string) => {
 		setNodes((n) => n.filter((node) => node.id !== id));
-		setIsSaved(false);
 	}, [setNodes]);
 
 	const handleExecute = useCallback(async () => {
@@ -115,7 +113,6 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 		},
 		onSuccess: () => {
 			setIsSaving(false);
-			setIsSaved(true);
 			toast.success("Workflow saved successfully");
 		},
 		onError: () => {
@@ -153,7 +150,6 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 						);
 						setEdges((e) => e.concat(cleaned));
 					}
-					setIsSaved(true);
 				}
 				setTimeout(() => {
 					setLoading(false);
@@ -197,44 +193,41 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 		};
 
 		setNodes((nds) => [...nds, newNode]);
-		setIsSaved(false);
 	}, [nodes.length, handleDeleteNode, setNodes]);
 
 	const onConnect = useCallback(
 		(params: Edge | Connection) => {
 			setEdges((eds) => addEdge(params, eds));
-			setIsSaved(false);
 		},
 		[setEdges],
 	);
 
-	const handleNodesChange = useCallback(
-        //@ts-ignore
-		(changes: any) => {
-			onNodesChange(changes);
-			if (!isInitializingRef.current) {
-				const hasMeaningful = Array.isArray(changes)
-					? changes.some((c) => c?.type && c.type !== "select")
-					: true;
-				if (hasMeaningful) setIsSaved(false);
-			}
-		},
-		[onNodesChange],
-	);
-
-	const handleEdgesChange = useCallback(
-        //@ts-ignore
-		(changes: any) => {
-			onEdgesChange(changes);
-			if (!isInitializingRef.current) {
-				const hasMeaningful = Array.isArray(changes)
-					? changes.some((c) => c?.type && c.type !== "select")
-					: true;
-				if (hasMeaningful) setIsSaved(false);
-			}
-		},
-		[onEdgesChange],
-	);
+	// const handleNodesChange = useCallback(
+	//        //@ts-ignore
+	// 	(changes: any) => {
+	// 		onNodesChange(changes);
+	// 		if (!isInitializingRef.current) {
+	// 			const hasMeaningful = Array.isArray(changes)
+	// 				? changes.some((c) => c?.type && c.type !== "select")
+	// 				: true;
+	// 		}
+	// 	},
+	// 	[onNodesChange],
+	// );
+	//
+	// const handleEdgesChange = useCallback(
+	//        //@ts-ignore
+	// 	(changes: any) => {
+	// 		onEdgesChange(changes);
+	// 		if (!isInitializingRef.current) {
+	// 			const hasMeaningful = Array.isArray(changes)
+	// 				? changes.some((c) => c?.type && c.type !== "select")
+	// 				: true;
+	// 			if (hasMeaningful) setIsSaved(false);
+	// 		}
+	// 	},
+	// 	[onEdgesChange],
+	// );
 
 	const handleSaveWorkflow = useCallback(() => {
 		setIsSaving(true);
@@ -257,8 +250,8 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 				fitView={false}
 				deleteKeyCode={null}
 				nodeTypes={nodeTypes}
-				onNodesChange={handleNodesChange}
-				onEdgesChange={handleEdgesChange}
+				onNodesChange={onNodesChange}
+				onEdgesChange={onEdgesChange}
 				onConnect={onConnect}
 				nodes={nodes}
 				edges={edges}

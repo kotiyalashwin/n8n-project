@@ -15,6 +15,7 @@ import { Button } from "../ui/button";
 import { useNodeDataStore } from "@/store/nodedata";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
+import Image from "next/image";
 
 export default function NodeForm({
 	type,
@@ -110,7 +111,7 @@ export default function NodeForm({
 		<div className="h-full">
 			<form onSubmit={handleSubmit} className="flex h-full flex-col gap-4">
 				<h1 className="text-3xl font-semibold text-foreground mb-2 flex gap-2 items-center">
-					<img
+					<Image
 						src={`/icons/${type}.svg`}
 						alt={config.label}
 						className="w-8 h-8"

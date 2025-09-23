@@ -1,7 +1,8 @@
 import { nodeConfigs } from "@/lib/nodes";
 import { newNodeParams } from "@/lib/types";
-import { ChevronRight, CircleX, Cross } from "lucide-react";
+import { ChevronRight, CircleX, } from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
 
 export const NodeLibrary = ({
 	addNode,
@@ -10,7 +11,7 @@ export const NodeLibrary = ({
 }) => {
 	const [search, setSearch] = useState("");
 
-	const filteredNodes = Object.entries(nodeConfigs).filter(([key, config]) =>
+	const filteredNodes = Object.entries(nodeConfigs).filter(([, config]) =>
 		config.label.toLowerCase().includes(search.toLowerCase())
 	);
 
@@ -37,7 +38,7 @@ export const NodeLibrary = ({
 						key={key}
 						className="relative p-3 rounded-lg flex items-center gap-3 cursor-pointer border bg-card shadow-xs hover:shadow-sm transition-shadow"
 					>
-						<img
+						<Image
 							src={`/icons/${key}.svg`}
 							alt={config.label}
 							className="w-8 h-8"
