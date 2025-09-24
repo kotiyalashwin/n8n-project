@@ -2,6 +2,7 @@ import { Edge, Node } from "@xyflow/react";
 import axios from "axios";
 import { embeddNodeData } from "./embeddFormData";
 import { useCredentialStore } from "@/store/credentials";
+import { BACKEN_URL } from "@/costant";
 
 export const saveWorkflow = async (
   workFlowId: string,
@@ -17,10 +18,10 @@ export const saveWorkflow = async (
       edges,
     };
     const response = await axios.post(
-      "https://api.x8x.com/workflow/save",
+            `${BACKEN_URL}/workflow/save`,
       body
     );
-    await axios.post("https://api.x8x.com/credentials/new", {
+    await axios.post(`${BACKEN_URL}/credentials/new`, {
       workflowid: workFlowId,
       credentials,
     });
@@ -35,7 +36,7 @@ export const saveWorkflow = async (
 export const getWorkflow = async (workflowid: string) => {
   try {
     const response = await axios.get(
-      `https://api.x8x.com/workflow/${workflowid}`
+      `${BACKEN_URL}/workflow/${workflowid}`
     );
     const nodesData = await response.data;
     const credentialData = await getCredentials(workflowid);
@@ -48,7 +49,7 @@ export const getWorkflow = async (workflowid: string) => {
 
 const getCredentials = async (workflowid: string) => {
   try {
-    const response = await axios.get(`https://api.x8x.com/credentials`, {
+    const response = await axios.get(`${BACKEN_URL}/credentials`, {
       params: {
         workflowid,
       },

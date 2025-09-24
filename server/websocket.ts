@@ -34,7 +34,7 @@ class WebSocketManager {
 
   private setupWebSocketServer() {
     this.wss.on("connection", async (ws: WebSocket, req: IncomingMessage) => {
-      const url = new URL(req.url!, `http://${req.headers.host}`);
+      const url = new URL(req.url!, `https://${req.headers.host}`);
       const workflowId = url.searchParams.get("workflowId");
 
       if (workflowId) {

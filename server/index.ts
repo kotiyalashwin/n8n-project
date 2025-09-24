@@ -23,7 +23,7 @@ const redis = createClient();
 app.use(express.json());
 app.use(
 	cors({
-		origin: "http://localhost:3000",
+		origin: ["http://localhost:3000", "https://api.x8x.woksh.com"],
 	}),
 );
 

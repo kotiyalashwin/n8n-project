@@ -1,3 +1,4 @@
+import { WS_URL } from "@/costant";
 import { useEffect, useRef, useState } from "react";
 
 export interface NodeStatusUpdate {
@@ -20,7 +21,7 @@ export const useWebSocket = (workflowId: string) => {
 		if (!workflowId) return;
 
 		// Create WebSocket connection
-		const ws = new WebSocket(`wss://api.x8x.com/ws?workflowId=${workflowId}`);
+		const ws = new WebSocket(`${WS_URL}?workflowId=${workflowId}`);
 		wsRef.current = ws;
 
 		ws.onopen = () => {
