@@ -77,7 +77,7 @@ function WorkFlowArea({ workFlowId }: { workFlowId: string }) {
 		try {
 			clearNodeStatuses();
 			const response = await axios.post(
-				`http://ec2-34-203-28-254.compute-1.amazonaws.com:8000/workflow/execute/${workFlowId}`,
+				`http://api.x8x.com/workflow/execute/${workFlowId}`,
 			);
 			if (response.status !== 200) {
 				toast.error("Execution Failed");

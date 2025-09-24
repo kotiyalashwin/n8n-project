@@ -20,7 +20,7 @@ export const useWebSocket = (workflowId: string) => {
 		if (!workflowId) return;
 
 		// Create WebSocket connection
-		const ws = new WebSocket(`ws://ec2-34-203-28-254.compute-1.amazonaws.com:8000/ws?workflowId=${workflowId}`);
+		const ws = new WebSocket(`wss://api.x8x.com/ws?workflowId=${workflowId}`);
 		wsRef.current = ws;
 
 		ws.onopen = () => {
