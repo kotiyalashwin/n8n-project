@@ -17,10 +17,10 @@ export const saveWorkflow = async (
       edges,
     };
     const response = await axios.post(
-      "http://api.x8x.com/workflow/save",
+      "https://api.x8x.com/workflow/save",
       body
     );
-    await axios.post("http://api.x8x.com/credentials/new", {
+    await axios.post("https://api.x8x.com/credentials/new", {
       workflowid: workFlowId,
       credentials,
     });
@@ -35,7 +35,7 @@ export const saveWorkflow = async (
 export const getWorkflow = async (workflowid: string) => {
   try {
     const response = await axios.get(
-      `http://api.x8x.com/workflow/${workflowid}`
+      `https://api.x8x.com/workflow/${workflowid}`
     );
     const nodesData = await response.data;
     const credentialData = await getCredentials(workflowid);
@@ -48,7 +48,7 @@ export const getWorkflow = async (workflowid: string) => {
 
 const getCredentials = async (workflowid: string) => {
   try {
-    const response = await axios.get(`http://api.x8x.com/credentials`, {
+    const response = await axios.get(`https://api.x8x.com/credentials`, {
       params: {
         workflowid,
       },
