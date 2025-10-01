@@ -1,0 +1,42 @@
+name: Deploy to Ec2
+
+on:
+  push:
+    branches:
+      - ec2
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy and restart with PM2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            DEPLOY_PATH="/home/${{ secrets.SSH_USER }}/n8n-project"
+            APP_NAME="x8x-be"
+
+            cd $DEPLOY_PATH || exit 1
+
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+            nvm use || nvm install node --default
+
+            git switch deployment || exit 1
+
+            git pull --ff-only origin deployment || exit 1
+
+            npm install --production || exit 1
+
+            if pm2 describe $APP_NAME > /dev/null; then
+              pm2 reload $APP_NAME || exit 1
+            else
+              echo "PM2 app $APP_NAME not found. Skipping reload."
+            fi
