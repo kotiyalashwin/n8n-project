@@ -26,7 +26,7 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-  res.send("Healthy");
+  res.send("Healthy Server");
 });
 
 app.get("/workflow/:id", async (req, res) => {
