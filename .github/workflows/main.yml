@@ -29,7 +29,7 @@ jobs:
 
             nvm use || nvm install node --default
 
-            git switch deployment || exit 1
+            git switch ec2 || exit 1
 
             git pull --ff-only origin deployment || exit 1
 
