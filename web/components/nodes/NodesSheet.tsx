@@ -24,7 +24,7 @@ export const NodeSheet = ({
       open={isOpen}
       onOpenChange={(value) => (value ? openSheet() : closeSheet())}
     >
-      <SheetContent className="ease-in-out ">
+      <SheetContent className="ease-in-out bg-sidebar">
         <SheetHeader>
           <SheetTitle className="text-primary text-lg">
             Explore all tools

@@ -72,7 +72,9 @@ export const ManualNode = ({ data, nodeStatus }: ManualNodeProps) => {
 					<Image
 						src={`/icons/${data.type}.svg`}
 						alt={data.type}
-						className="w-16 h-16"
+						width={64}
+						height={64}
+						// className="w-16 h-16"
 					/>
 				</div>
 				{data.count !== 1 && (

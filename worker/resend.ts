@@ -1,12 +1,6 @@
 import { Resend } from "resend";
 import { RESEND_KEY } from "./constant";
-
-type SendMailProps = {
-  to: string;
-  subject?: string;
-  body: string;
-  key?: string;
-};
+import type { SendMailProps } from "./types";
 
 export const SendMail = async ({ to, subject, body, key }: SendMailProps) => {
   let resend;

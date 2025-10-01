@@ -67,7 +67,8 @@ export const TaskNode = ({ data, nodeStatus }: TaskNodeProps) => {
 							<Image
 								src={`/icons/${data.type}.svg`}
 								alt={data.type}
-								className="w-16 h-16"
+								width={64}
+								height={64}
 							/>
 						</div>
 						{data.type !== "manual" && (

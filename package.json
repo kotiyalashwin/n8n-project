@@ -1,12 +1,12 @@
 {
-	"scripts": {
-		"dev:worker": "cd worker && bun index.ts",
-		"dev:server": "cd server && bun index.ts",
-		"dev:web": "cd web && bun dev",
-		"dev:all": "concurrently \"npm run dev:worker\" \"npm run dev:server\" \"npm run dev:web\"",
-		"dev:backend": "concurrently \"npm run dev:worker\" \"npm run dev:server\""
-	},
-	"devDependencies": {
-		"concurrently": "^8.2.2"
-	}
+  "scripts": {
+    "dev:worker": "cd worker && bun index.ts",
+    "dev:server": "cd server && bun index.ts",
+    "dev:web": "cd web && bun dev",
+    "dev:all": "concurrently \"npm run dev:worker\" \"npm run dev:server\" \"npm run dev:web\"",
+    "dev:backend": "concurrently \"npm run dev:worker\" \"npm run dev:server\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
 }

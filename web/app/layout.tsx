@@ -1,46 +1,32 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "sonner";
-import { Sidebar } from "@/components/Sidebar";
-import { Inter } from "next/font/google";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-
 
 export const metadata: Metadata = {
-	title: "x8x-Home",
-	description: "Build automations like n8n",
+  title: "x8x",
+  description: "Build automations like n8n",
 };
 
 export default function RootLayout({
-	children,
+  children,
 }: Readonly<{
-	children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-	return (
-		<html lang="en">
-			<body
-				className={` ${inter.variable} antialiased`}
-			>
-				<div className="flex lg:hidden min-h-screen justify-center items-center">
-					<p className="text-5xl px-10">x8x is meant to run on desktops.
-						Kindly visit x8x.woksh.com on larger screens</p>
-				</div>
-				<div className="hidden min-h-screen w-screen lg:grid grid-cols-[200px_1fr]">
-					<Sidebar />
-					<main className="min-h-screen overflow-hidden">{children}</main>
-				</div>
-				<Toaster
-					theme="dark"
-					richColors
-					toastOptions={{
-						classNames: {
-							content: "text-amber-200 text-lg font-medium",
-						},
-					}}
-					position="top-right"
-				/>
-			</body>
-		</html>
-	);
+  return (
+    <html lang="en">
+      <body className={` antialiased`}>
+        {children}
+        <Toaster
+          theme="dark"
+          richColors
+          toastOptions={{
+            classNames: {
+              content: "text-amber-200 text-lg font-medium",
+            },
+          }}
+          position="top-right"
+        />
+      </body>
+    </html>
+  );
 }

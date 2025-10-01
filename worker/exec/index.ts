@@ -1,55 +1,40 @@
-import type { RedisClient } from "../index.ts";
+import { getContext, publishUpdates, setOutput } from "../redis.ts";
 import { execFunctions } from "./functions/configs.ts";
-export type ExecNode = {
-	nodeId: string;
-	type: string;
-	data: {
-		formData?: { name: string; value: string }[];
-		credentials: {
-			info: { name: string; value: string }[];
-			service: string;
-		}[];
-	};
-	workflowId: string;
-};
-
-type ExecuteFunctionProps = {
-	redis: RedisClient;
-	node: ExecNode;
-};
+import type { ExecuteFunctionProps } from "../types.ts";
 
 export const ExecNodeFunction = async ({
-	redis,
-	node,
+  redis,
+  node,
 }: ExecuteFunctionProps) => {
-	const executor = execFunctions[node.type as keyof typeof execFunctions];
-	try {
-		//not publishing
-		// console.log(`publishing to updates:${node.workflowId}`);
-		// console.log("recieved data:", node.data)
-		await redis.publish(
-			`updates:${node.workflowId}`,
-			JSON.stringify({ nodeId: node.nodeId, status: "processing" }),
-		);
-		console.log(`executing ${node.type}`);
+  //get context
+  const context = await getContext(redis, node.parents ?? []);
+  //context :  { nodeId : message}
+  console.log(context);
+  const executor = execFunctions[node.type as keyof typeof execFunctions];
+  try {
+    await publishUpdates(redis, node.workflowId, node.nodeId, "processing");
 
-		//here is some error
-		executor(node.workflowId, {
-			formData: node.data.formData ?? [],
-			credentials: node.data.credentials,
-		});
-		console.log(`executed : ${node.type}`);
-		await redis.publish(
-			`updates:${node.workflowId}`,
-			JSON.stringify({ nodeId: node.nodeId, status: "completed" }),
-		);
-		return true;
-	} catch (e) {
-		console.log(e)
-		await redis.publish(
-			`updates:${node.workflowId}`,
-			JSON.stringify({ nodeId: node.nodeId, status: "error" }),
-		);
-		return false;
-	}
+    //calling execution function
+    const output = await executor(node.workflowId, {
+      formData: node.data.formData ?? [],
+      credentials: node.data.credentials,
+      context: context,
+    });
+
+    //check for the producesOutput parmeter
+    const producesOutput =
+      node.data.formData
+        ?.find((f) => f.name === "producesOutput")
+        ?.value.toLocaleLowerCase() === "true";
+
+    //setting updates to redis
+    if (producesOutput) {
+      await setOutput(redis, node.nodeId, output);
+    }
+    return true;
+  } catch (e) {
+    console.log(e);
+    await publishUpdates(redis, node.workflowId, node.nodeId, "error");
+    return false;
+  }
 };
