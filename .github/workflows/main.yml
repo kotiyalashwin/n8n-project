@@ -31,7 +31,7 @@ jobs:
 
             git switch ec2 || exit 1
 
-            git pull --ff-only origin deployment || exit 1
+            git pull --ff-only origin ec2 || exit 1
 
             npm install --production || exit 1
 
